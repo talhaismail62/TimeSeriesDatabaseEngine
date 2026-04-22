@@ -1,0 +1,3 @@
+/home/rohailaaa/Documents/Univiresty/SemesterIV/ADBMS/TimeSeriesDatabaseEngine/build/CMakeFiles/tsdb.dir
+/home/rohailaaa/Documents/Univiresty/SemesterIV/ADBMS/TimeSeriesDatabaseEngine/build/CMakeFiles/edit_cache.dir
+/home/rohailaaa/Documents/Univiresty/SemesterIV/ADBMS/TimeSeriesDatabaseEngine/build/CMakeFiles/rebuild_cache.dir
