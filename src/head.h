@@ -2,6 +2,7 @@
 #define HEAD_H
 
 #include<stdbool.h>
+#include <pthread.h>
 
 #define HEAD_CAPACITY 1024
 
@@ -11,6 +12,8 @@ typedef struct {
 
         int size;
         long lastTimestamp;
+
+        pthread_mutex_t lock;
 } HeadBlock;
 
 HeadBlock *getNewHeadBlock();

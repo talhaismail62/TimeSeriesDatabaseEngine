@@ -12,8 +12,24 @@ set(COMMON_SOURCES
 
 add_executable(tsdb
     src/main.c
-    src/server.c
+    
+    src/uthash.h
+
     src/server.h
+    src/server.c
+
+    src/request.c
+    src/request.h
+
+    src/registry.h
+    src/registry.c
+
+    src/head.h
+    src/head.c
+
+    src/parsor.c
+    src/parsor.h
+    
     ${COMMON_SOURCES}
 )
 

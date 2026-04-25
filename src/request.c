@@ -76,9 +76,6 @@ Response ProcessRequest(Request *request)
         Response response;
         response.runFurther = true;
         response.result = NULL;
-
-        if (request == NULL)
-                return response;
         
         switch (request->type)
         {
@@ -87,7 +84,7 @@ Response ProcessRequest(Request *request)
                 print_metric(request->metric);
                 break;
         case QUIT:
-                handleQuit();
+                // handleQuit();
                 response.runFurther = false;
                 break;
         case GET:
@@ -110,5 +107,5 @@ char* handleGET(Request *request) { // i am using the bucketseconds as the size 
 }
 void handleQuit()
 {
-        cleanupRegistry();
+        // cleanupRegistry();
 }

@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <limits.h>
+#include <stdbool.h>
+#include <signal.h>
 
 #define BUFFER_SIZE 1024
 
@@ -20,5 +22,7 @@ void *handleClient(void *arg);
 bool createPthreadForUsers(int clientSocket);
 
 void createAndRunServer(const int portNumber);
+
+void handle_shutdown(int sig);
 
 #endif

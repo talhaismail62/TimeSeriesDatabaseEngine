@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 #include <stdbool.h>
 
 
@@ -14,12 +15,13 @@ HeadBlock* getNewHeadBlock() {
         head->size = 0;
         head->timestamps = (long *)malloc(sizeof(long) * HEAD_CAPACITY);
         head->values = (double *)malloc(sizeof(double) * HEAD_CAPACITY);
+        pthread_mutex_init(&head->lock, NULL);
         return head;
 }
 
 bool PUT_value(HeadBlock* head, long timestamp, double value)
 {
-        if(!head) {
+        if (head->size > 0 && timestamp <= head->lastTimestamp) {
                 return false;
         }
         if(head->size >= HEAD_CAPACITY) {
@@ -63,7 +65,7 @@ char* GET_value(HeadBlock *head, long startTimestamp, long endTimestamp, int *si
                         }
                         tmp = strcat(tmp, "\t");
                         tmp = strcat(tmp, tmp1);
-
+                        free(tmp1);
                         int needed = strlen(tmp) + 2;
 
                         if (offset + needed >= capacity) {
@@ -90,6 +92,7 @@ char* GET_value(HeadBlock *head, long startTimestamp, long endTimestamp, int *si
                 return NULL;
         }
         range = strcat(range, tmp);
+        free(tmp);
         range = strcat(range, " points)\n");
         return range;
 }
@@ -106,20 +109,20 @@ char* longToString(long x)
 
 char* doubleToString(double x)
 {
-        char *buf = malloc(sizeof(double));
+        char *buf = malloc(32);
         if (!buf) 
                 return NULL;
 
-        snprintf(buf, sizeof(double), "%.2f", x);
+        snprintf(buf, 32, "%.2f", x);
         return buf;
 }
 
 char* intToString(int x)
 {
-        char *buf = malloc(sizeof(double));
+        char *buf = malloc(32);
         if (!buf) 
                 return NULL;
 
-        snprintf(buf, sizeof(double), "%d", x);
+        snprintf(buf, 32, "%d", x);
         return buf;
 }

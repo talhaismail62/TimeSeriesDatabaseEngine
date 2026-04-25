@@ -11,10 +11,14 @@
 #include <limits.h>
 #include "server.h"
 #include "request.h"
+#include <errno.h>
 
 #define BUFFER_SIZE 1024
+volatile bool server_running = true;
+int serverSocket;
 
-void handleArguements(int argc, char* argv[], int *portNumber, char *dataFilePath) {
+void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
+{
 
         for (int i = 0; i < argc; ++i) {
                 if(strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
@@ -77,8 +81,9 @@ void* handleClient(void* arg) {
                                 break;
                         }
                         printf("%s\n", response.result);
+                        free(response.result);
                 }
-                
+
                 free(request);
                 //  PUT cpu.usage 1728000000 45.2 
                 // GET cpu.usage 1728000000 1728000005
@@ -124,7 +129,7 @@ bool createPthreadForUsers(int clientSocket)
 }
 
 void createAndRunServer(const int portNumber) {
-        int serverSocket, clientSocket;
+        int clientSocket;
         struct sockaddr_in serverAddress, clientAddress;
 
         serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -150,15 +155,19 @@ void createAndRunServer(const int portNumber) {
 
         printf("Server listening on port %d...\n", portNumber);
 
-
+        signal(SIGINT, handle_shutdown);
+        signal(SIGTERM, handle_shutdown);
         socklen_t addressSize;
-        while (1)
+        while (server_running)
         {
                 addressSize = sizeof(clientAddress);
                 clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &addressSize);
                 // printf("cs : %d", clientSocket);
                 if (clientSocket < 0) {
-                        printf("HHHH");
+                        if (!server_running) 
+                                break;
+                        if (errno == EINTR || errno == EBADF)
+                                break;
                         perror("Accept failed");
                         continue;
                 }
@@ -167,8 +176,14 @@ void createAndRunServer(const int portNumber) {
                 createPthreadForUsers(clientSocket);
                 
         }
-        close(serverSocket);
-
+        
+        printf("Server shutting down...\n");
+        cleanupRegistry();
+        
 }
 
-
+void handle_shutdown(int sig)
+{
+    server_running = false;
+    close(serverSocket);
+}

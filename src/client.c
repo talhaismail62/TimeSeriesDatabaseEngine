@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         int sock;
         int portNumber = 8088;
         char ipAddress[256] = "127.0.0.1";
-        char buffer[BUFFER_SIZE];
+        char *buffer = NULL;
         char message[BUFFER_SIZE];
 
         handleArguments(argc, argv, &portNumber, ipAddress);
@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
 
         while (1) {
                 printf("> ");
+                buffer = (char *)malloc(BUFFER_SIZE);
                 fgets(message, BUFFER_SIZE, stdin);
 
                 send(sock, message, strlen(message), 0);
@@ -69,13 +70,15 @@ int main(int argc, char* argv[]) {
                         printf("Server disconnected\n");
                         break;
                 }
-                if(strcmp(buffer, "quit") == 0) {
-                        
+                // printf("[%s]\n", buffer);
+                if (strncmp(buffer, "quit", 4) == 0)
+                {
                         printf("bye:)\n");
                         break;
                 }
                 buffer[bytes] = '\0';
                 printf("%s\n", buffer);
+                free(buffer);
         }
 
         close(sock);
