@@ -1,24 +1,10 @@
 #include "parsor.h"
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
+#include "request.h"
+#include "registry.h"
 
-typedef enum {
-        PUT, GET, FLUSH, QUIT, STATS, AGG
-} CommandType;
-
-typedef struct {
-        CommandType type;
-        char metric[64];
-
-        long timestamp;
-        double value;
-
-        long startTimeStamp;
-        long endTimeStamp;
-
-        int bucketSeconds;
-        char func[16];
-} Request;
 
 Request* getRequest(const char* buffer)
 {
@@ -29,6 +15,8 @@ Request* getRequest(const char* buffer)
                 free_parser(p);
                 return NULL;
         }
+        printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
+        printf("RAW: [%s]\n", p->subStrings[0]);
 
         if(p->size == 4 && strcmp(p->subStrings[0], "PUT") == 0) {
                 request->type = PUT;
@@ -60,12 +48,12 @@ Request* getRequest(const char* buffer)
                 strncpy(request->metric, p->subStrings[1], sizeof(request->metric) - 1);
                 request->metric[sizeof(request->metric) - 1] = '\0';
         }
-        else if(strcmp(p->subStrings[0], "QUIT") == 0) {
+        else if(p->size == 1 && strcmp(p->subStrings[0], "QUIT") == 0) {
                 request->type = QUIT;
         }
         else if(p->size == 6 && strcmp(p->subStrings[0], "AGG") == 0) {
                 request->type = AGG;
-                
+
                 strncpy(request->metric, p->subStrings[1], sizeof(request->metric) - 1);
                 request->metric[sizeof(request->metric) - 1] = '\0';
 
@@ -81,4 +69,34 @@ Request* getRequest(const char* buffer)
         }
         free_parser(p);
         return request;
+}
+
+bool ProcessRequest(Request *request)
+{
+        bool flag = true;
+        switch (request->type)
+        {
+        case PUT:
+                handlePUT(request);
+                break;
+        case QUIT:
+                handleQuit();
+                flag = false;
+        default:
+                break;
+        }
+        print_metric(request->metric);
+        return flag;
+}
+
+bool handlePUT(Request *request)
+{
+        if(request == NULL)
+                return false;
+        return Head_PUT(request->metric, request->timestamp, request->value);
+}
+
+void handleQuit()
+{
+        cleanupRegistry();
 }

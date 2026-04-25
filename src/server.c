@@ -3,11 +3,14 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <limits.h>
 #include "server.h"
-#include "parsor.h"
+#include "request.h"
 
 #define BUFFER_SIZE 1024
 
@@ -29,7 +32,7 @@ void* handleClient(void* arg) {
         int clientSocket = *(int*)arg;
 
         free(arg);
-        parser *p = NULL;
+        Request *request = NULL;
         char buffer[BUFFER_SIZE];
 
         while (1) {
@@ -42,21 +45,23 @@ void* handleClient(void* arg) {
                 }
 
                 buffer[bytes] = '\0';
-                p = parseString(buffer);
-                if(p == NULL) {
+                request = getRequest(buffer);
+                if (request == NULL) {
                         send(clientSocket, "Invalid Command!", 17, 0);
                         continue;
                 }
-
-                // print_parser(p);
-                // printf("%d\n", p->size);
                 
                 printf("Client says: %s\n", buffer);
+
+                if(ProcessRequest(request) == false) {
+                        send(clientSocket,"quit" , 4, 0);
+                        break;
+                }
                 if (send(clientSocket, "ok", 2, 0) < 0) {
                         perror("send failed");
                         break;
                 }
-                free_parser(p);
+                free(request);
                 //  PUT cpu.usage 1728000000 45.2
                 // send(clientSocket, buffer, bytes, 0);
         }
@@ -99,6 +104,8 @@ void createAndRunServer(const int portNumber) {
 
         // bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
         // listen(serverSocket, 10);
+        int opt = 1;
+        setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
         if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                 perror("bind failed");

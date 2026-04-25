@@ -17,7 +17,7 @@ parser* parseString(const char *buffer) {
                 return NULL;
         }
 
-        char *subStrings = strtok(temp, " ");
+        char *subStrings = strtok(temp, " \r\n");
 
         while (subStrings != NULL) {
                 char **newArr = (char **)realloc(p->subStrings, (p->size + 1) * sizeof(char *));

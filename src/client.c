@@ -25,27 +25,6 @@ bool establishConnection(int* sock, int* portNumber, char message[], char buffer
         return true;
 }
 
-void hadleConversation(int sock, char message[], char buffer[]) {
-
-        while (1)
-        {
-                printf("> ");
-                fgets(message, BUFFER_SIZE, stdin);
-                send(sock, message, strlen(message), 0);
-                int bytes = recv(sock, buffer, BUFFER_SIZE - 1, 0);
-                printf("%d", bytes);
-
-                if (bytes <= 0) {
-                        printf("Server disconnected\n");
-                        break;
-                }
-
-                buffer[bytes] = '\0';
-                printf("%s\n", buffer);
-        }
-        close(sock);
-}
-
 void handleArguments(int argc, char * argv[], int *portNumber, char* ipaddress)
 {
         if (argc >= 3) {
@@ -88,6 +67,11 @@ int main(int argc, char* argv[]) {
 
                 if (bytes <= 0) {
                         printf("Server disconnected\n");
+                        break;
+                }
+                if(strcmp(buffer, "quit") == 0) {
+                        
+                        printf("bye:)\n");
                         break;
                 }
                 buffer[bytes] = '\0';

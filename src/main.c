@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "server.h"
+#include "registry.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,5 @@ int main(int argc, char *argv[])
         printf("tsdb started on port %d, data directory %s\n", portNumber, dataFilePath);
 
         createAndRunServer(portNumber);
-
         return 0;
 }
