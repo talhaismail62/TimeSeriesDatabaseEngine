@@ -71,31 +71,43 @@ Request* getRequest(const char* buffer)
         return request;
 }
 
-bool ProcessRequest(Request *request)
+Response ProcessRequest(Request *request)
 {
-        bool flag = true;
+        Response response;
+        response.runFurther = true;
+        response.result = NULL;
+
+        if (request == NULL)
+                return response;
+        
         switch (request->type)
         {
         case PUT:
                 handlePUT(request);
+                print_metric(request->metric);
                 break;
         case QUIT:
                 handleQuit();
-                flag = false;
+                response.runFurther = false;
+                break;
+        case GET:
+                response.result = handleGET(request);
+                break;
         default:
                 break;
         }
-        print_metric(request->metric);
-        return flag;
+        // print_metric(request->metric);
+        return response;
 }
 
 bool handlePUT(Request *request)
 {
-        if(request == NULL)
-                return false;
         return Head_PUT(request->metric, request->timestamp, request->value);
 }
 
+char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
+        return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
+}
 void handleQuit()
 {
         cleanupRegistry();

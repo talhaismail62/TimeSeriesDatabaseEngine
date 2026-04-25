@@ -25,11 +25,19 @@ typedef struct {
         char func[16];
 } Request;
 
-Request *getRequest(const char *buffer);
+typedef struct {
+        bool runFurther;
+        char *result;
+} Response;
 
-bool ProcessRequest(Request *request);
+Request *
+getRequest(const char *buffer);
+
+Response ProcessRequest(Request *request);
 
 bool handlePUT(Request *request);
+
+char *handleGET(Request *request);
 
 void handleQuit();
 

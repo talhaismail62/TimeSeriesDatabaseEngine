@@ -16,6 +16,8 @@ HeadBlock *getMetricFromHashTable(char *key);
 
 bool Head_PUT(char *metricName, long timestamp, double value);
 
+char *Head_GET(char *metricName, long startTimestamp, long endTimestamp, int *size);
+
 void deleteMetric(char *key);
 
 void print_metric(char *metric);

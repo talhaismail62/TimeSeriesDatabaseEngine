@@ -53,17 +53,48 @@ void* handleClient(void* arg) {
                 
                 printf("Client says: %s\n", buffer);
 
-                if(ProcessRequest(request) == false) {
+                Response response = ProcessRequest(request);
+                if (response.runFurther == false) {
                         send(clientSocket,"quit" , 4, 0);
                         break;
                 }
-                if (send(clientSocket, "ok", 2, 0) < 0) {
-                        perror("send failed");
-                        break;
+                if(response.result == NULL) {
+                        if (send(clientSocket, "ok", 2, 0) < 0) {
+                                perror("send failed");
+                                break;
+                        }
                 }
+                else {
+                        if(request->bucketSeconds <= 0) {
+                                if (send(clientSocket, "No data Found!", 15, 0) < 0) {
+                                        perror("send failed");
+                                        break;
+                                }
+                        }
+                        else if (send(clientSocket, response.result, strlen(response.result), 0) < 0)
+                        {
+                                perror("send failed");
+                                break;
+                        }
+                        printf("%s\n", response.result);
+                }
+                
                 free(request);
-                //  PUT cpu.usage 1728000000 45.2
+                //  PUT cpu.usage 1728000000 45.2 
+                // GET cpu.usage 1728000000 1728000005
                 // send(clientSocket, buffer, bytes, 0);
+
+                // PUT cpu.usage 1728000000 45.2
+                // ok
+                // > PUT cpu.usage 1728000001 34.5
+                // ok
+                // > PUT cpu.usage 1728000002 34.3
+                // ok
+                // > PUT cpu.usage 1728000005 45.0
+                // ok
+                // > PUT cpu.usage 1728000007 31.0
+                // ok
+                // > GET cpu.usage 1728000000 1728000005
         }
         close(clientSocket);
         return NULL;

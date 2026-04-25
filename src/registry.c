@@ -32,6 +32,11 @@ bool Head_PUT(char *metricName, long timestamp, double value)
         return PUT_value(head, timestamp, value);
 }
 
+char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* size) {
+        HeadBlock *head = getMetricFromHashTable(metricName);
+        return GET_value(head, startTimestamp, endTimestamp, size);
+}
+
 void print_metric(char *metric) {
         metric_registry *entry;
 

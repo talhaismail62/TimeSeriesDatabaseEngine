@@ -17,4 +17,12 @@ HeadBlock *getNewHeadBlock();
 
 bool PUT_value(HeadBlock *head, long timestamp, double value);
 
+char *GET_value(HeadBlock *head, long startTimestamp, long endTimestamp, int* size);
+
+char *longToString(long x);
+
+char *doubleToString(double x);
+
+char *intToString(int x);
+
 #endif
