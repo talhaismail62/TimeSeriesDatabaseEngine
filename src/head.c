@@ -126,3 +126,42 @@ char* intToString(int x)
         snprintf(buf, 32, "%d", x);
         return buf;
 }
+
+
+char* STATS_value(HeadBlock *hb, char* metricName)
+{
+
+        if(hb == NULL) {
+                char *result = malloc(20);
+                if (result) {
+                        snprintf(result, 20, "Metric not found: %s\n", metricName);
+                }
+                return result;
+        }
+ 
+        
+        char *stats = malloc(512);
+        if (!stats) {
+                pthread_mutex_unlock(&hb->lock);
+                return NULL;
+        }
+ 
+        int offset = 0;
+        offset += snprintf(stats + offset, 512 - offset, "metric: %s\n", metricName);
+        offset += snprintf(stats + offset, 512 - offset, "total points: %d\n", hb->size);
+        offset += snprintf(stats + offset, 512 - offset, "in memory: %d\n", hb->size);
+        offset += snprintf(stats + offset, 512 - offset, "on disk: 0\n");
+        offset += snprintf(stats + offset, 512 - offset, "disk chunks: 0\n");
+        
+        if (hb->size > 0) {
+                offset += snprintf(stats + offset, 512 - offset, "first timestamp: %ld\n", 
+                                 hb->timestamps[0]);
+                offset += snprintf(stats + offset, 512 - offset, "last timestamp: %ld\n", 
+                                 hb->lastTimestamp);
+        } else {
+                offset += snprintf(stats + offset, 512 - offset, "first timestamp: N/A\n");
+                offset += snprintf(stats + offset, 512 - offset, "last timestamp: N/A\n");
+        }
+ 
+        return stats;
+}

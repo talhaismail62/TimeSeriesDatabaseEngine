@@ -41,5 +41,6 @@ char *handleGET(Request *request);
 
 void handleQuit();
 
-#endif
+char *handleSTATS(Request *request);
 
+#endif

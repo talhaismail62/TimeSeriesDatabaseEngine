@@ -39,7 +39,7 @@ parser* parseString(const char *buffer) {
                 }
 
                 p->size++;
-                subStrings = strtok(NULL, " ");
+                subStrings = strtok(NULL, " \r\n");
         }
 
         free(temp);

@@ -90,6 +90,9 @@ Response ProcessRequest(Request *request)
         case GET:
                 response.result = handleGET(request);
                 break;
+        case STATS:
+                response.result = handleSTATS(request);
+                break;
         default:
                 break;
         }
@@ -104,6 +107,11 @@ bool handlePUT(Request *request)
 
 char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
         return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
+}
+
+char* handleSTATS(Request *request)
+{
+        return Head_STATS(request->metric);
 }
 void handleQuit()
 {

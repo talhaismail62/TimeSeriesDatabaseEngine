@@ -3,8 +3,10 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include<dirent.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -12,6 +14,7 @@
 #include "server.h"
 #include "request.h"
 #include <errno.h>
+#include "registry.h"
 
 #define BUFFER_SIZE 1024
 volatile bool server_running = true;
@@ -58,7 +61,9 @@ void* handleClient(void* arg) {
                 printf("Client says: %s\n", buffer);
 
                 Response response = ProcessRequest(request);
-                if (response.runFurther == false) {
+
+                if (response.runFurther == false)
+                {
                         send(clientSocket,"quit" , 4, 0);
                         break;
                 }
@@ -100,6 +105,7 @@ void* handleClient(void* arg) {
                 // > PUT cpu.usage 1728000007 31.0
                 // ok
                 // > GET cpu.usage 1728000000 1728000005
+                // > STATS cpu.usage
         }
         close(clientSocket);
         return NULL;
@@ -128,7 +134,7 @@ bool createPthreadForUsers(int clientSocket)
         return true;
 }
 
-void createAndRunServer(const int portNumber) {
+void createAndRunServer(const int portNumber, char *dataFilePath) {
         int clientSocket;
         struct sockaddr_in serverAddress, clientAddress;
 
@@ -158,6 +164,8 @@ void createAndRunServer(const int portNumber) {
         signal(SIGINT, handle_shutdown);
         signal(SIGTERM, handle_shutdown);
         socklen_t addressSize;
+
+        loadRegistry(dataFilePath);
         while (server_running)
         {
                 addressSize = sizeof(clientAddress);
@@ -186,4 +194,39 @@ void handle_shutdown(int sig)
 {
     server_running = false;
     close(serverSocket);
+}
+
+
+void loadRegistry(char* dataFilePath)
+{
+        DIR *dir = opendir(dataFilePath);
+        if (!dir) {
+                perror("opendir");
+                return;
+        }
+
+        struct dirent *entry;
+
+        while ((entry = readdir(dir)) != NULL) {
+
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                        continue;
+
+                char full_path[512];
+                snprintf(full_path, sizeof(full_path), "%s/%s", dataFilePath, entry->d_name);
+
+                struct stat st;
+                if (stat(full_path, &st) == -1) {
+                        perror("stat");
+                        continue;
+                }
+
+                if (S_ISDIR(st.st_mode)) {
+                        getMetricFromHashTable(entry->d_name, true);
+                        printf("Metric directory: %s\n", entry->d_name);
+                }
+
+                
+        }
+        closedir(dir);
 }

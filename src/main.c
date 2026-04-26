@@ -11,6 +11,6 @@ int main(int argc, char *argv[])
 
         printf("tsdb started on port %d, data directory %s\n", portNumber, dataFilePath);
 
-        createAndRunServer(portNumber);
+        createAndRunServer(portNumber, dataFilePath);
         return 0;
 }

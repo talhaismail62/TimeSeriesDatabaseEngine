@@ -21,8 +21,10 @@ void *handleClient(void *arg);
 
 bool createPthreadForUsers(int clientSocket);
 
-void createAndRunServer(const int portNumber);
+void createAndRunServer(const int portNumber, char *dataFilePath);
 
 void handle_shutdown(int sig);
+
+void loadRegistry(char *dataFilePath);
 
 #endif

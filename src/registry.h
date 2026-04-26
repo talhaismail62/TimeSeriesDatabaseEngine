@@ -12,7 +12,7 @@ typedef struct {
 
 extern metric_registry *registry;
 
-HeadBlock *getMetricFromHashTable(char *key);
+HeadBlock *getMetricFromHashTable(char *key, bool flag);
 
 bool Head_PUT(char *metricName, long timestamp, double value);
 
@@ -23,5 +23,7 @@ void deleteMetric(char *key);
 void print_metric(char *metric);
 
 void cleanupRegistry();
+
+char *Head_STATS(char *metricName);
 
 #endif

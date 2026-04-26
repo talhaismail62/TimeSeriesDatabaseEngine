@@ -28,4 +28,5 @@ char *doubleToString(double x);
 
 char *intToString(int x);
 
+char *STATS_value(HeadBlock *head, char* metricName);
 #endif
