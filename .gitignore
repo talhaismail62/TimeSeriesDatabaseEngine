@@ -3,6 +3,5 @@ tsdb-cli
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 .vscode
 uthash.h
