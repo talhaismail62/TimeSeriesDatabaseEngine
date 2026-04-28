@@ -1,17 +1,23 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "registry.h"
 
-typedef enum {
-        PUT, GET, FLUSH, QUIT, STATS, AGG
+typedef enum
+{
+        PUT,
+        GET,
+        FLUSH,
+        QUIT,
+        STATS,
+        AGG
 } CommandType;
 
-typedef struct {
+typedef struct
+{
         CommandType type;
         char metric[64];
 
@@ -25,7 +31,8 @@ typedef struct {
         char func[16];
 } Request;
 
-typedef struct {
+typedef struct
+{
         bool runFurther;
         char *result;
 } Response;

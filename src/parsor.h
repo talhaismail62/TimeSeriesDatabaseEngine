@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-typedef struct {
+typedef struct
+{
         char **subStrings;
         int size;
 } parser;
 
-parser* parseString(const char *buffer);
+parser *parseString(const char *buffer);
 
 void print_parser(parser *p);
 

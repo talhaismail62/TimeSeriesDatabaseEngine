@@ -4,7 +4,8 @@
 #include "uthash.h"
 #include "head.h"
 
-typedef struct {
+typedef struct
+{
         char key[64];
         HeadBlock *head;
         UT_hash_handle hh;

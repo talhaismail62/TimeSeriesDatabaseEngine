@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
-#include<dirent.h>
+#include <dirent.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,59 +23,71 @@ int serverSocket;
 void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
 {
 
-        for (int i = 0; i < argc; ++i) {
-                if(strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
+        for (int i = 0; i < argc; ++i)
+        {
+                if (strcmp(argv[i], "--port") == 0 && i + 1 < argc)
+                {
                         *portNumber = atoi(argv[i + 1]);
                         ++i;
                 }
-                else if(strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
+                else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc)
+                {
                         strcpy(dataFilePath, argv[i + 1]);
                         ++i;
                 }
         }
 }
 
-void* handleClient(void* arg) {
-        int clientSocket = *(int*)arg;
+void *handleClient(void *arg)
+{
+        int clientSocket = *(int *)arg;
 
         free(arg);
         Request *request = NULL;
         char buffer[BUFFER_SIZE];
 
-        while (1) {
+        while (1)
+        {
                 int bytes = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
                 // printf("%d", bytes);
 
-                if (bytes <= 0) {
+                if (bytes <= 0)
+                {
                         printf("Client disconnected\n");
                         break;
                 }
 
                 buffer[bytes] = '\0';
                 request = getRequest(buffer);
-                if (request == NULL) {
+                if (request == NULL)
+                {
                         send(clientSocket, "Invalid Command!", 17, 0);
                         continue;
                 }
-                
+
                 printf("Client says: %s\n", buffer);
 
                 Response response = ProcessRequest(request);
 
                 if (response.runFurther == false)
                 {
-                        send(clientSocket,"quit" , 4, 0);
+                        send(clientSocket, "quit", 4, 0);
                         break;
                 }
-                if(response.result == NULL) {
-                        if (send(clientSocket, "ok", 2, 0) < 0) {
+                if (response.result == NULL)
+                {
+                        if (send(clientSocket, "ok", 2, 0) < 0)
+                        {
                                 perror("send failed");
                                 break;
                         }
                 }
-                else {
-                        if(request->bucketSeconds <= 0) {
-                                if (send(clientSocket, "No data Found!", 15, 0) < 0) {
+                else
+                {
+                        if (request->bucketSeconds <= 0)
+                        {
+                                if (send(clientSocket, "No data Found!", 15, 0) < 0)
+                                {
                                         perror("send failed");
                                         break;
                                 }
@@ -90,7 +102,7 @@ void* handleClient(void* arg) {
                 }
 
                 free(request);
-                //  PUT cpu.usage 1728000000 45.2 
+                //  PUT cpu.usage 1728000000 45.2
                 // GET cpu.usage 1728000000 1728000005
                 // send(clientSocket, buffer, bytes, 0);
 
@@ -116,14 +128,16 @@ bool createPthreadForUsers(int clientSocket)
         pthread_t tid;
 
         int *pclient = malloc(sizeof(int));
-        if (!pclient) {
+        if (!pclient)
+        {
                 perror("malloc failed!");
                 close(clientSocket);
                 return false;
         }
         *pclient = clientSocket;
 
-        if (pthread_create(&tid, NULL, handleClient, pclient) != 0) {
+        if (pthread_create(&tid, NULL, handleClient, pclient) != 0)
+        {
                 perror("Thread creation failed");
                 free(pclient);
                 close(clientSocket);
@@ -134,7 +148,8 @@ bool createPthreadForUsers(int clientSocket)
         return true;
 }
 
-void createAndRunServer(const int portNumber, char *dataFilePath) {
+void createAndRunServer(const int portNumber, char *dataFilePath)
+{
         int clientSocket;
         struct sockaddr_in serverAddress, clientAddress;
 
@@ -149,12 +164,14 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         int opt = 1;
         setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-        if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+        if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+        {
                 perror("bind failed");
                 exit(1);
         }
 
-        if (listen(serverSocket, 128) < 0) {
+        if (listen(serverSocket, 128) < 0)
+        {
                 perror("listen failed");
                 exit(1);
         }
@@ -171,8 +188,9 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
                 addressSize = sizeof(clientAddress);
                 clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &addressSize);
                 // printf("cs : %d", clientSocket);
-                if (clientSocket < 0) {
-                        if (!server_running) 
+                if (clientSocket < 0)
+                {
+                        if (!server_running)
                                 break;
                         if (errno == EINTR || errno == EBADF)
                                 break;
@@ -182,32 +200,31 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
                 printf("New client connected!\n");
 
                 createPthreadForUsers(clientSocket);
-                
         }
-        
+
         printf("Server shutting down...\n");
         cleanupRegistry();
-        
 }
 
 void handle_shutdown(int sig)
 {
-    server_running = false;
-    close(serverSocket);
+        server_running = false;
+        close(serverSocket);
 }
 
-
-void loadRegistry(char* dataFilePath)
+void loadRegistry(char *dataFilePath)
 {
         DIR *dir = opendir(dataFilePath);
-        if (!dir) {
+        if (!dir)
+        {
                 perror("opendir");
                 return;
         }
 
         struct dirent *entry;
 
-        while ((entry = readdir(dir)) != NULL) {
+        while ((entry = readdir(dir)) != NULL)
+        {
 
                 if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
                         continue;
@@ -216,17 +233,17 @@ void loadRegistry(char* dataFilePath)
                 snprintf(full_path, sizeof(full_path), "%s/%s", dataFilePath, entry->d_name);
 
                 struct stat st;
-                if (stat(full_path, &st) == -1) {
+                if (stat(full_path, &st) == -1)
+                {
                         perror("stat");
                         continue;
                 }
 
-                if (S_ISDIR(st.st_mode)) {
+                if (S_ISDIR(st.st_mode))
+                {
                         getMetricFromHashTable(entry->d_name, true);
                         printf("Metric directory: %s\n", entry->d_name);
                 }
-
-                
         }
         closedir(dir);
 }

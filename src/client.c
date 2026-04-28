@@ -7,7 +7,8 @@
 
 #define BUFFER_SIZE 1024
 
-bool establishConnection(int* sock, int* portNumber, char message[], char buffer[],const char *ipAddress) {
+bool establishConnection(int *sock, int *portNumber, char message[], char buffer[], const char *ipAddress)
+{
         struct sockaddr_in server_addr;
         *sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -16,7 +17,8 @@ bool establishConnection(int* sock, int* portNumber, char message[], char buffer
 
         inet_pton(AF_INET, ipAddress, &server_addr.sin_addr);
 
-        if (connect(*sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        if (connect(*sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+        {
                 perror("Connection failed");
                 return false;
         }
@@ -25,15 +27,17 @@ bool establishConnection(int* sock, int* portNumber, char message[], char buffer
         return true;
 }
 
-void handleArguments(int argc, char * argv[], int *portNumber, char* ipaddress)
+void handleArguments(int argc, char *argv[], int *portNumber, char *ipaddress)
 {
-        if (argc >= 3) {
+        if (argc >= 3)
+        {
                 *portNumber = atoi(argv[2]);
                 strcpy(ipaddress, argv[1]);
         }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
         int sock;
         int portNumber = 8088;
         char ipAddress[256] = "127.0.0.1";
@@ -41,9 +45,9 @@ int main(int argc, char* argv[]) {
         char message[BUFFER_SIZE];
 
         handleArguments(argc, argv, &portNumber, ipAddress);
-        
+
         struct sockaddr_in server_addr;
-        
+
         sock = socket(AF_INET, SOCK_STREAM, 0);
 
         server_addr.sin_family = AF_INET;
@@ -51,14 +55,16 @@ int main(int argc, char* argv[]) {
 
         inet_pton(AF_INET, ipAddress, &server_addr.sin_addr);
 
-        if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+        {
                 perror("Connection failed");
                 return 1;
         }
 
         printf("Connected to server!\n");
 
-        while (1) {
+        while (1)
+        {
                 printf("> ");
                 buffer = (char *)malloc(BUFFER_SIZE);
                 fgets(message, BUFFER_SIZE, stdin);
@@ -66,7 +72,8 @@ int main(int argc, char* argv[]) {
                 send(sock, message, strlen(message), 0);
                 int bytes = recv(sock, buffer, BUFFER_SIZE - 1, 0);
 
-                if (bytes <= 0) {
+                if (bytes <= 0)
+                {
                         printf("Server disconnected\n");
                         break;
                 }
