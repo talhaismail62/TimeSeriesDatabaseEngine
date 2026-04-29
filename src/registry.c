@@ -37,7 +37,7 @@ bool Head_PUT(char *metricName, long timestamp, double value)
 {
         printf("reached Head_STATS, %s\n", metricName);
         pthread_mutex_lock(&registry_lock);
-        HeadBlock *head = getMetricFromHashTable(metricName, false);
+        HeadBlock *head = getMetricFromHashTable(metricName, true);
         pthread_mutex_unlock(&registry_lock);
         if (!head)
         {

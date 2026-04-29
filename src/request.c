@@ -111,6 +111,7 @@ char* handleGET(Request *request) { // i am using the bucketseconds as the size 
 
 char* handleSTATS(Request *request)
 {
+        request->bucketSeconds = 1;
         return Head_STATS(request->metric);
 }
 void handleQuit()

@@ -130,7 +130,7 @@ char* intToString(int x)
 
 char* STATS_value(HeadBlock *hb, char* metricName)
 {
-
+        
         if(hb == NULL) {
                 char *result = malloc(20);
                 if (result) {
