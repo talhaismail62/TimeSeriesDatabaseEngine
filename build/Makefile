@@ -142,6 +142,19 @@ tsdb-cli/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/build
 .PHONY : tsdb-cli/fast
 
+#=============================================================================
+# Target rules for targets named test_bit_io
+
+# Build rule for target.
+test_bit_io: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_bit_io
+.PHONY : test_bit_io
+
+# fast build rule for target.
+test_bit_io/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/build
+.PHONY : test_bit_io/fast
+
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
 
@@ -149,6 +162,7 @@ src/bit_io.o: src/bit_io.c.o
 src/bit_io.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.o
 .PHONY : src/bit_io.c.o
 
 src/bit_io.i: src/bit_io.c.i
@@ -158,6 +172,7 @@ src/bit_io.i: src/bit_io.c.i
 src/bit_io.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.i
 .PHONY : src/bit_io.c.i
 
 src/bit_io.s: src/bit_io.c.s
@@ -167,6 +182,7 @@ src/bit_io.s: src/bit_io.c.s
 src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
 src/client.o: src/client.c.o
@@ -340,6 +356,30 @@ src/server.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/server.c.s
 .PHONY : src/server.c.s
 
+tests/test_bit_io.o: tests/test_bit_io.c.o
+.PHONY : tests/test_bit_io.o
+
+# target to build an object file
+tests/test_bit_io.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/tests/test_bit_io.c.o
+.PHONY : tests/test_bit_io.c.o
+
+tests/test_bit_io.i: tests/test_bit_io.c.i
+.PHONY : tests/test_bit_io.i
+
+# target to preprocess a source file
+tests/test_bit_io.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/tests/test_bit_io.c.i
+.PHONY : tests/test_bit_io.c.i
+
+tests/test_bit_io.s: tests/test_bit_io.c.s
+.PHONY : tests/test_bit_io.s
+
+# target to generate assembly for a file
+tests/test_bit_io.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/tests/test_bit_io.c.s
+.PHONY : tests/test_bit_io.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -348,6 +388,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test_bit_io"
 	@echo "... tsdb"
 	@echo "... tsdb-cli"
 	@echo "... src/bit_io.o"
@@ -374,6 +415,9 @@ help:
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
+	@echo "... tests/test_bit_io.o"
+	@echo "... tests/test_bit_io.i"
+	@echo "... tests/test_bit_io.s"
 .PHONY : help
 
 

@@ -39,3 +39,5 @@ add_executable(tsdb-cli
     src/client.c
     ${COMMON_SOURCES}
 )
+
+add_executable(test_bit_io tests/test_bit_io.c src/bit_io.c)
