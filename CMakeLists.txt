@@ -8,6 +8,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(COMMON_SOURCES
     src/parsor.c
     src/parsor.h
+    src/bit_io.c
+    src/bit_io.h
 )
 
 add_executable(tsdb
