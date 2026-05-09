@@ -12,6 +12,8 @@ set(COMMON_SOURCES
     src/bit_io.h
     src/timestamp.c
     src/timestamp.h
+    src/value.c
+    src/value.h
 )
 
 add_executable(tsdb
