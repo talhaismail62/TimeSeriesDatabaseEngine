@@ -14,6 +14,8 @@ set(COMMON_SOURCES
     src/timestamp.h
     src/value.c
     src/value.h
+    src/chunk.c
+    src/chunk.h
 )
 
 add_executable(tsdb

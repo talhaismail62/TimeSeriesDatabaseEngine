@@ -217,6 +217,33 @@ src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
+src/chunk.o: src/chunk.c.o
+.PHONY : src/chunk.o
+
+# target to build an object file
+src/chunk.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.o
+.PHONY : src/chunk.c.o
+
+src/chunk.i: src/chunk.c.i
+.PHONY : src/chunk.i
+
+# target to preprocess a source file
+src/chunk.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.i
+.PHONY : src/chunk.c.i
+
+src/chunk.s: src/chunk.c.s
+.PHONY : src/chunk.s
+
+# target to generate assembly for a file
+src/chunk.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.s
+.PHONY : src/chunk.c.s
+
 src/client.o: src/client.c.o
 .PHONY : src/client.o
 
@@ -536,6 +563,9 @@ help:
 	@echo "... src/bit_io.o"
 	@echo "... src/bit_io.i"
 	@echo "... src/bit_io.s"
+	@echo "... src/chunk.o"
+	@echo "... src/chunk.i"
+	@echo "... src/chunk.s"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
