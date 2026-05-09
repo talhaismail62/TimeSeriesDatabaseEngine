@@ -181,6 +181,19 @@ test_value/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/build
 .PHONY : test_value/fast
 
+#=============================================================================
+# Target rules for targets named test_chunk
+
+# Build rule for target.
+test_chunk: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_chunk
+.PHONY : test_chunk
+
+# fast build rule for target.
+test_chunk/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/build
+.PHONY : test_chunk/fast
+
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
 
@@ -224,6 +237,7 @@ src/chunk.o: src/chunk.c.o
 src/chunk.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.o
 .PHONY : src/chunk.c.o
 
 src/chunk.i: src/chunk.c.i
@@ -233,6 +247,7 @@ src/chunk.i: src/chunk.c.i
 src/chunk.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.i
 .PHONY : src/chunk.c.i
 
 src/chunk.s: src/chunk.c.s
@@ -242,6 +257,7 @@ src/chunk.s: src/chunk.c.s
 src/chunk.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.s
 .PHONY : src/chunk.c.s
 
 src/client.o: src/client.c.o
@@ -499,6 +515,30 @@ tests/test_bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/tests/test_bit_io.c.s
 .PHONY : tests/test_bit_io.c.s
 
+tests/test_chunk.o: tests/test_chunk.c.o
+.PHONY : tests/test_chunk.o
+
+# target to build an object file
+tests/test_chunk.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/tests/test_chunk.c.o
+.PHONY : tests/test_chunk.c.o
+
+tests/test_chunk.i: tests/test_chunk.c.i
+.PHONY : tests/test_chunk.i
+
+# target to preprocess a source file
+tests/test_chunk.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/tests/test_chunk.c.i
+.PHONY : tests/test_chunk.c.i
+
+tests/test_chunk.s: tests/test_chunk.c.s
+.PHONY : tests/test_chunk.s
+
+# target to generate assembly for a file
+tests/test_chunk.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/tests/test_chunk.c.s
+.PHONY : tests/test_chunk.c.s
+
 tests/test_timestamp.o: tests/test_timestamp.c.o
 .PHONY : tests/test_timestamp.o
 
@@ -556,6 +596,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_bit_io"
+	@echo "... test_chunk"
 	@echo "... test_timestamp"
 	@echo "... test_value"
 	@echo "... tsdb"
@@ -596,6 +637,9 @@ help:
 	@echo "... tests/test_bit_io.o"
 	@echo "... tests/test_bit_io.i"
 	@echo "... tests/test_bit_io.s"
+	@echo "... tests/test_chunk.o"
+	@echo "... tests/test_chunk.i"
+	@echo "... tests/test_chunk.s"
 	@echo "... tests/test_timestamp.o"
 	@echo "... tests/test_timestamp.i"
 	@echo "... tests/test_timestamp.s"
