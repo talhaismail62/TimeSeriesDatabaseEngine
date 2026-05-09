@@ -356,6 +356,33 @@ src/server.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/server.c.s
 .PHONY : src/server.c.s
 
+src/timestamp.o: src/timestamp.c.o
+.PHONY : src/timestamp.o
+
+# target to build an object file
+src/timestamp.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.o
+.PHONY : src/timestamp.c.o
+
+src/timestamp.i: src/timestamp.c.i
+.PHONY : src/timestamp.i
+
+# target to preprocess a source file
+src/timestamp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.i
+.PHONY : src/timestamp.c.i
+
+src/timestamp.s: src/timestamp.c.s
+.PHONY : src/timestamp.s
+
+# target to generate assembly for a file
+src/timestamp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.s
+.PHONY : src/timestamp.c.s
+
 tests/test_bit_io.o: tests/test_bit_io.c.o
 .PHONY : tests/test_bit_io.o
 
@@ -415,6 +442,9 @@ help:
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
+	@echo "... src/timestamp.o"
+	@echo "... src/timestamp.i"
+	@echo "... src/timestamp.s"
 	@echo "... tests/test_bit_io.o"
 	@echo "... tests/test_bit_io.i"
 	@echo "... tests/test_bit_io.s"

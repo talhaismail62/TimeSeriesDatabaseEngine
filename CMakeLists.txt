@@ -10,6 +10,8 @@ set(COMMON_SOURCES
     src/parsor.h
     src/bit_io.c
     src/bit_io.h
+    src/timestamp.c
+    src/timestamp.h
 )
 
 add_executable(tsdb
