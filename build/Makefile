@@ -155,6 +155,19 @@ test_bit_io/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/build
 .PHONY : test_bit_io/fast
 
+#=============================================================================
+# Target rules for targets named test_timestamp
+
+# Build rule for target.
+test_timestamp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_timestamp
+.PHONY : test_timestamp
+
+# fast build rule for target.
+test_timestamp/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/build
+.PHONY : test_timestamp/fast
+
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
 
@@ -163,6 +176,7 @@ src/bit_io.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.o
 .PHONY : src/bit_io.c.o
 
 src/bit_io.i: src/bit_io.c.i
@@ -173,6 +187,7 @@ src/bit_io.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.i
 .PHONY : src/bit_io.c.i
 
 src/bit_io.s: src/bit_io.c.s
@@ -183,6 +198,7 @@ src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
 src/client.o: src/client.c.o
@@ -363,6 +379,7 @@ src/timestamp.o: src/timestamp.c.o
 src/timestamp.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.o
 .PHONY : src/timestamp.c.o
 
 src/timestamp.i: src/timestamp.c.i
@@ -372,6 +389,7 @@ src/timestamp.i: src/timestamp.c.i
 src/timestamp.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.i
 .PHONY : src/timestamp.c.i
 
 src/timestamp.s: src/timestamp.c.s
@@ -381,6 +399,7 @@ src/timestamp.s: src/timestamp.c.s
 src/timestamp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.s
 .PHONY : src/timestamp.c.s
 
 tests/test_bit_io.o: tests/test_bit_io.c.o
@@ -407,6 +426,30 @@ tests/test_bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/tests/test_bit_io.c.s
 .PHONY : tests/test_bit_io.c.s
 
+tests/test_timestamp.o: tests/test_timestamp.c.o
+.PHONY : tests/test_timestamp.o
+
+# target to build an object file
+tests/test_timestamp.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/tests/test_timestamp.c.o
+.PHONY : tests/test_timestamp.c.o
+
+tests/test_timestamp.i: tests/test_timestamp.c.i
+.PHONY : tests/test_timestamp.i
+
+# target to preprocess a source file
+tests/test_timestamp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/tests/test_timestamp.c.i
+.PHONY : tests/test_timestamp.c.i
+
+tests/test_timestamp.s: tests/test_timestamp.c.s
+.PHONY : tests/test_timestamp.s
+
+# target to generate assembly for a file
+tests/test_timestamp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/tests/test_timestamp.c.s
+.PHONY : tests/test_timestamp.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -416,6 +459,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_bit_io"
+	@echo "... test_timestamp"
 	@echo "... tsdb"
 	@echo "... tsdb-cli"
 	@echo "... src/bit_io.o"
@@ -448,6 +492,9 @@ help:
 	@echo "... tests/test_bit_io.o"
 	@echo "... tests/test_bit_io.i"
 	@echo "... tests/test_bit_io.s"
+	@echo "... tests/test_timestamp.o"
+	@echo "... tests/test_timestamp.i"
+	@echo "... tests/test_timestamp.s"
 .PHONY : help
 
 
