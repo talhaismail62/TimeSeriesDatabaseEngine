@@ -40,11 +40,7 @@ int main() {
 
     bwclose(bw);
 
-    printf(
-        "Success.\n",
-        num_points,
-        bw->buffer->size
-    );
+    printf("Successfully encoded %d timestamps into %zu bytes.\n", num_points, bw->buffer->size);
 
     struct bitreader *br = brcreate(bw->buffer);
 

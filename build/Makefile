@@ -168,6 +168,19 @@ test_timestamp/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/build
 .PHONY : test_timestamp/fast
 
+#=============================================================================
+# Target rules for targets named test_value
+
+# Build rule for target.
+test_value: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_value
+.PHONY : test_value
+
+# fast build rule for target.
+test_value/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/build
+.PHONY : test_value/fast
+
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
 
@@ -177,6 +190,7 @@ src/bit_io.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.o
 .PHONY : src/bit_io.c.o
 
 src/bit_io.i: src/bit_io.c.i
@@ -188,6 +202,7 @@ src/bit_io.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.i
 .PHONY : src/bit_io.c.i
 
 src/bit_io.s: src/bit_io.c.s
@@ -199,6 +214,7 @@ src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
 src/client.o: src/client.c.o
@@ -409,6 +425,7 @@ src/value.o: src/value.c.o
 src/value.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.o
 .PHONY : src/value.c.o
 
 src/value.i: src/value.c.i
@@ -418,6 +435,7 @@ src/value.i: src/value.c.i
 src/value.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.i
 .PHONY : src/value.c.i
 
 src/value.s: src/value.c.s
@@ -427,6 +445,7 @@ src/value.s: src/value.c.s
 src/value.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.s
 .PHONY : src/value.c.s
 
 tests/test_bit_io.o: tests/test_bit_io.c.o
@@ -477,6 +496,30 @@ tests/test_timestamp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/tests/test_timestamp.c.s
 .PHONY : tests/test_timestamp.c.s
 
+tests/test_value.o: tests/test_value.c.o
+.PHONY : tests/test_value.o
+
+# target to build an object file
+tests/test_value.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/tests/test_value.c.o
+.PHONY : tests/test_value.c.o
+
+tests/test_value.i: tests/test_value.c.i
+.PHONY : tests/test_value.i
+
+# target to preprocess a source file
+tests/test_value.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/tests/test_value.c.i
+.PHONY : tests/test_value.c.i
+
+tests/test_value.s: tests/test_value.c.s
+.PHONY : tests/test_value.s
+
+# target to generate assembly for a file
+tests/test_value.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/tests/test_value.c.s
+.PHONY : tests/test_value.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -487,6 +530,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test_bit_io"
 	@echo "... test_timestamp"
+	@echo "... test_value"
 	@echo "... tsdb"
 	@echo "... tsdb-cli"
 	@echo "... src/bit_io.o"
@@ -525,6 +569,9 @@ help:
 	@echo "... tests/test_timestamp.o"
 	@echo "... tests/test_timestamp.i"
 	@echo "... tests/test_timestamp.s"
+	@echo "... tests/test_value.o"
+	@echo "... tests/test_value.i"
+	@echo "... tests/test_value.s"
 .PHONY : help
 
 

@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
+
 #include "../src/bit_io.h"
 
 uint64_t rand64() {
+
     uint64_t r1 = (uint64_t)rand();
     uint64_t r2 = (uint64_t)rand();
     uint64_t r3 = (uint64_t)rand();
@@ -19,9 +21,8 @@ int main() {
     int num_values = 1000;
 
     uint64_t values[1000];
-    int widths[1000];
 
-    printf("Starting test\n");
+    int widths[1000];
 
     struct bitwriter *bw = bwcreate();
 
@@ -36,22 +37,28 @@ int main() {
 
         values[i] = rand64() & mask;
 
-        bwwrite(bw, values[i], widths[i]);
+        bwwrite(
+            bw,
+            values[i],
+            widths[i]
+        );
     }
 
     bwclose(bw);
 
     printf(
-        "Success\n",
+        "Successfully wrote %d values into %zu bytes.\n",
         num_values,
         bw->buffer->size
     );
 
-    struct bitreader *br = brcreate(bw->buffer);
+    struct bitreader *br =
+        brcreate(bw->buffer);
 
     for (int i = 0; i < num_values; i++) {
 
-        uint64_t read_val = brread(br, widths[i]);
+        uint64_t read_val =
+            brread(br, widths[i]);
 
         if (read_val != values[i]) {
 
@@ -67,7 +74,9 @@ int main() {
         }
     }
 
-    printf("All values decoded and matched perfectly\n");
+    printf(
+        "Success\n"
+    );
 
     brfree(br);
 
