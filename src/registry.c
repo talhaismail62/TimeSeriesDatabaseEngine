@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include "head.h"
+#include "flush.h"
 
 metric_registry *registry = NULL;
 pthread_mutex_t registry_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -110,4 +111,61 @@ char* Head_STATS(char *metricName)
         pthread_mutex_unlock(&head->lock);
 
         return p;        
+}
+
+bool headflush(char *metricname) {
+
+    pthread_mutex_lock(&registry_lock);
+
+    HeadBlock *head =
+        getMetricFromHashTable(
+            metricname,
+            false
+        );
+
+    pthread_mutex_unlock(&registry_lock);
+
+    if (!head) {
+        return false;
+    }
+
+    pthread_mutex_lock(&head->lock);
+
+    if (head->size == 0) {
+
+        pthread_mutex_unlock(&head->lock);
+
+        return true;
+    }
+
+    uint32_t chunkid =
+        (uint32_t)head->timestamps[0];
+
+    char filepath[256];
+
+    snprintf(
+        filepath,
+        sizeof(filepath),
+        "%s_%u.chunk",
+        metricname,
+        chunkid
+    );
+
+    int res =
+        flushtochunk(
+            chunkid,
+            filepath,
+            (uint64_t *)head->timestamps,
+            head->values,
+            head->size
+        );
+
+    if (res == 0) {
+
+        head->size = 0;
+    }
+
+    pthread_mutex_unlock(&head->lock);
+
+    return (res == 0);
 }

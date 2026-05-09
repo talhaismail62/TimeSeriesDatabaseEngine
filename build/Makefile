@@ -284,6 +284,33 @@ src/client.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/client.c.s
 .PHONY : src/client.c.s
 
+src/flush.o: src/flush.c.o
+.PHONY : src/flush.o
+
+# target to build an object file
+src/flush.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.o
+.PHONY : src/flush.c.o
+
+src/flush.i: src/flush.c.i
+.PHONY : src/flush.i
+
+# target to preprocess a source file
+src/flush.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.i
+.PHONY : src/flush.c.i
+
+src/flush.s: src/flush.c.s
+.PHONY : src/flush.s
+
+# target to generate assembly for a file
+src/flush.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.s
+.PHONY : src/flush.c.s
+
 src/head.o: src/head.c.o
 .PHONY : src/head.o
 
@@ -610,6 +637,9 @@ help:
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
+	@echo "... src/flush.o"
+	@echo "... src/flush.i"
+	@echo "... src/flush.s"
 	@echo "... src/head.o"
 	@echo "... src/head.i"
 	@echo "... src/head.s"

@@ -26,4 +26,6 @@ void cleanupRegistry();
 
 char *Head_STATS(char *metricName);
 
+bool headflush(char* metricname);
+
 #endif

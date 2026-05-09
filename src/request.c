@@ -15,6 +15,13 @@ Request* getRequest(const char* buffer)
                 free_parser(p);
                 return NULL;
         }
+
+        if (p == NULL || p->size ==0){
+		free_parser(p);
+		free(request);
+		return NULL;
+	}
+
         printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
         printf("RAW: [%s]\n", p->subStrings[0]);
 
@@ -93,6 +100,8 @@ Response ProcessRequest(Request *request)
         case STATS:
                 response.result = handleSTATS(request);
                 break;
+        case FLUSH:
+                handleflush(request);
         default:
                 break;
         }
@@ -117,4 +126,8 @@ char* handleSTATS(Request *request)
 void handleQuit()
 {
         // cleanupRegistry();
+}
+bool handleflush(Request *request)
+{
+        return headflush(request->metric);
 }

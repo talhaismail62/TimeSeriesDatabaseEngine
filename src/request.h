@@ -43,4 +43,6 @@ void handleQuit();
 
 char *handleSTATS(Request *request);
 
+bool handleflush(Request *request);
+
 #endif

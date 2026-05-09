@@ -16,6 +16,8 @@ set(COMMON_SOURCES
     src/value.h
     src/chunk.c
     src/chunk.h
+    src/flush.c
+    src/flush.h
 )
 
 add_executable(tsdb
