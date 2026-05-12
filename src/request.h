@@ -33,9 +33,9 @@ typedef struct {
 Request *
 getRequest(const char *buffer);
 
-Response ProcessRequest(Request *request);
+Response ProcessRequest(Request *request, char* dataDir);
 
-bool handlePUT(Request *request);
+bool handlePUT(Request *request, char *dataDir);
 
 char *handleGET(Request *request);
 
@@ -43,6 +43,6 @@ void handleQuit();
 
 char *handleSTATS(Request *request);
 
-bool handleflush(Request *request);
+bool handleflush(Request *request, char* dataDir);
 
 #endif

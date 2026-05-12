@@ -78,7 +78,7 @@ Request* getRequest(const char* buffer)
         return request;
 }
 
-Response ProcessRequest(Request *request)
+Response ProcessRequest(Request *request, char *dataDir)
 {
         Response response;
         response.runFurther = true;
@@ -87,7 +87,7 @@ Response ProcessRequest(Request *request)
         switch (request->type)
         {
         case PUT:
-                handlePUT(request);
+                handlePUT(request, dataDir);
                 print_metric(request->metric);
                 break;
         case QUIT:
@@ -101,7 +101,7 @@ Response ProcessRequest(Request *request)
                 response.result = handleSTATS(request);
                 break;
         case FLUSH:
-                handleflush(request);
+                handleflush(request, dataDir);
         default:
                 break;
         }
@@ -109,9 +109,9 @@ Response ProcessRequest(Request *request)
         return response;
 }
 
-bool handlePUT(Request *request)
+bool handlePUT(Request *request, char* dataDir)
 {
-        return Head_PUT(request->metric, request->timestamp, request->value);
+        return Head_PUT(request->metric, request->timestamp, request->value, dataDir);
 }
 
 char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
@@ -127,7 +127,7 @@ void handleQuit()
 {
         // cleanupRegistry();
 }
-bool handleflush(Request *request)
+bool handleflush(Request *request, char* dataDir)
 {
-        return headflush(request->metric);
+        return headflush(request->metric, dataDir);
 }

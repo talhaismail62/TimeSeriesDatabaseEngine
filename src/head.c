@@ -25,6 +25,7 @@ bool PUT_value(HeadBlock* head, long timestamp, double value)
                 return false;
         }
         if(head->size >= HEAD_CAPACITY) {
+                
                 // this portion will be for the compression 
                 // and flushing the head block later on 
                 return false;

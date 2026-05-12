@@ -15,16 +15,24 @@
 
 #define BUFFER_SIZE 1024
 
-void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath);
+typedef struct {
+        int16_t clientSocket;
+        char path[256];
+} ThreadArgs;
+
+void
+handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath);
 
 void *handleClient(void *arg);
 
-bool createPthreadForUsers(int clientSocket);
+bool createPthreadForUsers(int clientSocket, char* dataFilePath);
 
 void createAndRunServer(const int portNumber, char *dataFilePath);
 
 void handle_shutdown(int sig);
 
 void loadRegistry(char *dataFilePath);
+
+void loadChunkMetadata(char *metricName, char *chunkPath);
 
 #endif

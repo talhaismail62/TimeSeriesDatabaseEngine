@@ -14,11 +14,13 @@
 #include "server.h"
 #include "request.h"
 #include <errno.h>
-#include "registry.h"
+#include "chunk.h"
 
 #define BUFFER_SIZE 1024
 volatile bool server_running = true;
 int serverSocket;
+pthread_mutex_t registry_lock02 = PTHREAD_MUTEX_INITIALIZER;
+
 
 void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
 {
@@ -36,9 +38,14 @@ void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePat
 }
 
 void* handleClient(void* arg) {
-        int clientSocket = *(int*)arg;
 
-        free(arg);
+        ThreadArgs *args = (ThreadArgs*)arg;
+        int clientSocket = args->clientSocket;
+        char dataDir[256];
+        strcpy(dataDir, args->path);
+
+        free(args);
+        
         Request *request = NULL;
         char buffer[BUFFER_SIZE];
 
@@ -60,7 +67,7 @@ void* handleClient(void* arg) {
                 
                 printf("Client says: %s\n", buffer);
 
-                Response response = ProcessRequest(request);
+                Response response = ProcessRequest(request, dataDir);
 
                 if (response.runFurther == false)
                 {
@@ -106,26 +113,36 @@ void* handleClient(void* arg) {
                 // ok
                 // > GET cpu.usage 1728000000 1728000005
                 // > STATS cpu.usage
+
+
+                // PUT cpu.usage 1728000008 31.0
+                // PUT cpu.usage 1728000009 32.0
+                // PUT cpu.usage 1728000010 33.0
+                // PUT cpu.usage 1728000011 34.0
+                // PUT cpu.usage 1728000012 36.0
         }
         close(clientSocket);
         return NULL;
 }
 
-bool createPthreadForUsers(int clientSocket)
+bool createPthreadForUsers(int clientSocket, char* dataFilePath)
 {
         pthread_t tid;
+        ThreadArgs *args = malloc(sizeof(ThreadArgs));
 
-        int *pclient = malloc(sizeof(int));
-        if (!pclient) {
-                perror("malloc failed!");
+        if (!args) {
+                perror("Failed to allocate thread args");
                 close(clientSocket);
                 return false;
         }
-        *pclient = clientSocket;
+        args->clientSocket = clientSocket;
+        strncpy(args->path, dataFilePath, 256 - 1);
+        args->path[256 - 1] = '\0';
 
-        if (pthread_create(&tid, NULL, handleClient, pclient) != 0) {
+        
+        if (pthread_create(&tid, NULL, handleClient, (void*)args) != 0) {
                 perror("Thread creation failed");
-                free(pclient);
+                free(args);
                 close(clientSocket);
                 return false;
         }
@@ -181,12 +198,12 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
                 }
                 printf("New client connected!\n");
 
-                createPthreadForUsers(clientSocket);
+                createPthreadForUsers(clientSocket, dataFilePath);
                 
         }
         
         printf("Server shutting down...\n");
-        cleanupRegistry();
+        cleanupRegistry(dataFilePath);
         
 }
 
@@ -196,9 +213,7 @@ void handle_shutdown(int sig)
     close(serverSocket);
 }
 
-
-void loadRegistry(char* dataFilePath)
-{
+void loadRegistry(char* dataFilePath) {
         DIR *dir = opendir(dataFilePath);
         if (!dir) {
                 perror("opendir");
@@ -206,27 +221,64 @@ void loadRegistry(char* dataFilePath)
         }
 
         struct dirent *entry;
-
         while ((entry = readdir(dir)) != NULL) {
-
                 if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
                         continue;
 
-                char full_path[512];
-                snprintf(full_path, sizeof(full_path), "%s/%s", dataFilePath, entry->d_name);
+                char metric_path[512];
+                snprintf(metric_path, sizeof(metric_path), "%s/%s", dataFilePath, entry->d_name);
 
                 struct stat st;
-                if (stat(full_path, &st) == -1) {
-                        perror("stat");
-                        continue;
-                }
-
-                if (S_ISDIR(st.st_mode)) {
+                if (stat(metric_path, &st) == 0 && S_ISDIR(st.st_mode)) {
                         getMetricFromHashTable(entry->d_name, true);
-                        printf("Metric directory: %s\n", entry->d_name);
-                }
+                        
+                        DIR *mDir = opendir(metric_path);
+                        if (!mDir) continue;
 
-                
+                        struct dirent *mEntry;
+                        while ((mEntry = readdir(mDir)) != NULL) {
+                                if (strstr(mEntry->d_name, ".chunk")) {
+                                char chunk_full_path[1024];
+                                snprintf(chunk_full_path, sizeof(chunk_full_path), "%s/%s", metric_path, mEntry->d_name);
+                                
+                                loadChunkMetadata(entry->d_name, chunk_full_path);
+                                }
+                        }
+                        closedir(mDir);
+                        printf("Metric directory and chunks loaded for: %s\n", entry->d_name);
+                }
         }
         closedir(dir);
+}
+
+
+void loadChunkMetadata(char *metricName, char *chunkPath) {
+
+        pthread_mutex_lock(&registry_lock02);
+        metric_registry *entry;
+        HASH_FIND_STR(registry, metricName, entry);
+        pthread_mutex_unlock(&registry_lock02);
+
+        if (!entry) 
+                return;
+
+        struct chunkheader header;
+        uint8_t *payload = NULL;
+
+        if (chunkread(chunkPath, &header, &payload) == 0) {
+
+                if (entry->chunkCount >= entry->chunkCapacity) {
+                        entry->chunkCapacity = (entry->chunkCapacity == 0) ? 4 : entry->chunkCapacity * 2;
+                        entry->chunks = realloc(entry->chunks, sizeof(ChunkMetadata) * entry->chunkCapacity);
+                }
+
+                entry->chunks[entry->chunkCount].start_ts = (long)header.startts;
+                entry->chunks[entry->chunkCount].end_ts = (long)header.endts;
+                strncpy(entry->chunks[entry->chunkCount].filename, chunkPath, 255);
+                
+                entry->chunkCount++;
+                
+                if (payload) 
+                        free(payload);
+        }
 }

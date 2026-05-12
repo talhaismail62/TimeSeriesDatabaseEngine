@@ -7,3 +7,9 @@ cmake_install.cmake
 uthash.h
 Phase01_GROUP02_PROJ_11
 Phase01
+Makefile
+test_bit_io
+test_chunk
+test_timestamp
+test_value
+data
