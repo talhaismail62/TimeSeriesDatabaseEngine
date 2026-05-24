@@ -81,14 +81,8 @@ void* handleClient(void* arg) {
                         }
                 }
                 else {
-                        if(request->bucketSeconds <= 0) {
-                                if (send(clientSocket, "No data Found!", 15, 0) < 0) {
-                                        perror("send failed");
-                                        break;
-                                }
-                        }
-                        else if (send(clientSocket, response.result, strlen(response.result), 0) < 0)
-                        {
+                        // Always send the result string if it exists.
+                        if (send(clientSocket, response.result, strlen(response.result), 0) < 0) {
                                 perror("send failed");
                                 break;
                         }

@@ -10,7 +10,7 @@ Request* getRequest(const char* buffer)
 {
         parser *p = parseString(buffer);
         Request *request = (Request *)malloc(sizeof(Request));
-
+        request->resultCount = 0;
         if(!request) {
                 free_parser(p);
                 return NULL;
@@ -118,14 +118,13 @@ bool handlePUT(Request *request, char* dataDir)
         return Head_PUT(request->metric, request->timestamp, request->value, dataDir);
 }
 
-char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
-        return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
-}
-
-char* handleSTATS(Request *request)
-{
-        request->bucketSeconds = 1;
-        return Head_STATS(request->metric);
+// char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
+//         return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
+// }
+//so now i am changing the handleGET to use resultcount as size instead of bucketseconds
+char* handleGET(Request *request) {
+        request->resultCount = 0;
+        return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->resultCount);
 }
 void handleQuit()
 {

@@ -20,7 +20,7 @@ typedef struct {
 
         long startTimeStamp;
         long endTimeStamp;
-
+        int resultCount;
         int bucketSeconds;
         char func[16];
 } Request;
