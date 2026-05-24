@@ -56,6 +56,7 @@ int flushtochunk(
 
     header.sizebytes =
         bw->buffer->size;
+    header.point_count = (uint32_t)numpoints;
 
     int result =
         chunkwrite(

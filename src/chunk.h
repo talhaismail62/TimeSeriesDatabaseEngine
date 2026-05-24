@@ -8,6 +8,7 @@ struct chunkheader {
     uint64_t startts;
     uint64_t endts;
     uint32_t sizebytes; 
+    uint32_t point_count;
 };
 
 

@@ -159,7 +159,7 @@ char* decompressChunk(const char* filepath, long start, long end, int* chunkPoin
         chunkResult[0] = '\0';
         int current_len = 0;
 
-        while (br->byteoffset < buf.size) {
+        for (uint32_t i = 0; i < header.point_count; i++) {
                 long ts = (long)tsdecoderread(&tsdec);
                 double val = valdecoderread(&valdec);
 
