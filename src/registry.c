@@ -14,6 +14,18 @@
 #include "chunk.h"
 #include "value.h"
 
+typedef struct {
+        long ts;
+        double val;
+} Point;
+
+static int append_point(Point **arr, int *n, int *cap, long ts, double val);
+static int collect_points_from_chunk(const char *filepath, long start, long end,Point **arr, int *n, int *cap);
+static int collect_points_from_head(HeadBlock *head, long start, long end,Point **arr, int *n, int *cap);
+
+static int cmp_point_ts(const void *a, const void *b);
+
+static char* agg_points(Point *pts, int n,long start, long end,int bucketSeconds,const char *func);
 
 metric_registry *registry = NULL;
 pthread_mutex_t registry_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -136,7 +148,78 @@ char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* si
 
         return result;
 }
+char* Head_AGG(char *metricName,
+               long startTimestamp,
+               long endTimestamp,
+               int bucketSeconds,
+               const char *func)
+{
+        // validate
+        if (bucketSeconds <= 0 || startTimestamp >= endTimestamp) {
+                char *err = (char*)malloc(64);
+                if (err) snprintf(err, 64, "ERR invalid range or bucket\n");
+                return err;
+        }
 
+        pthread_mutex_lock(&registry_lock);
+        metric_registry *entry;
+        HASH_FIND_STR(registry, metricName, entry);
+        pthread_mutex_unlock(&registry_lock);
+
+        if (!entry) {
+                // no metric -> empty result
+                char *out = (char*)malloc(32);
+                if (out) snprintf(out, 32, "(0 buckets)\n");
+                return out;
+        }
+
+        Point *pts = NULL;
+        int n = 0, cap = 0;
+
+        // 1) disk chunks
+        for (int i = 0; i < entry->chunkCount; i++) {
+                // overlap check: chunk overlaps [start,end)
+                if (entry->chunks[i].start_ts < endTimestamp &&
+                    entry->chunks[i].end_ts >= startTimestamp) {
+                        if (collect_points_from_chunk(entry->chunks[i].filename,
+                                                      startTimestamp, endTimestamp,
+                                                      &pts, &n, &cap) != 0) {
+                                free(pts);
+                                char *err = (char*)malloc(64);
+                                if (err) snprintf(err, 64, "ERR disk read\n");
+                                return err;
+                        }
+                }
+        }
+
+        // 2) RAM head
+        pthread_mutex_lock(&entry->head->lock);
+        if (collect_points_from_head(entry->head,
+                                     startTimestamp, endTimestamp,
+                                     &pts, &n, &cap) != 0) {
+                pthread_mutex_unlock(&entry->head->lock);
+                free(pts);
+                char *err = (char*)malloc(64);
+                if (err) snprintf(err, 64, "ERR no memory\n");
+                return err;
+        }
+        pthread_mutex_unlock(&entry->head->lock);
+
+        if (n == 0) {
+            char *out = (char*)malloc(32);
+            if (out) snprintf(out, 32, "(0 buckets)\n");
+            free(pts);
+            return out;
+        }
+
+        // sort by timestamp
+        qsort(pts, n, sizeof(Point), cmp_point_ts);
+
+        // aggregate
+        char *out = agg_points(pts, n, startTimestamp, endTimestamp, bucketSeconds, func);
+        free(pts);
+        return out;
+}
 char* decompressChunk(const char* filepath, long start, long end, int* chunkPoints) {
         struct chunkheader header;
         uint8_t *payload = NULL;
@@ -159,11 +242,11 @@ char* decompressChunk(const char* filepath, long start, long end, int* chunkPoin
         chunkResult[0] = '\0';
         int current_len = 0;
 
-        while (br->byteoffset < buf.size) {
+        for (uint32_t i = 0; i < header.point_count; i++) {
                 long ts = (long)tsdecoderread(&tsdec);
                 double val = valdecoderread(&valdec);
 
-                if (ts >= start && ts <= end) {
+                if (ts >= start && ts < end) {
                         count++;
                         char temp[128];
                         int n = snprintf(temp, sizeof(temp), "%ld\t%.2f\n", ts, val);
@@ -324,4 +407,186 @@ bool headflush(char *metricname, char *dataDir) {
         pthread_mutex_unlock(&head->lock);
 
         return (res == 0);
+}
+static int append_point(Point **arr, int *n, int *cap, long ts, double val)
+{
+        if (*cap == 0) {
+                *cap = 1024;
+                *arr = (Point*)malloc(sizeof(Point) * (*cap));
+                if (!*arr) return -1;
+        } else if (*n >= *cap) {
+                *cap *= 2;
+                Point *tmp = (Point*)realloc(*arr, sizeof(Point) * (*cap));
+                if (!tmp) return -1;
+                *arr = tmp;
+        }
+
+        (*arr)[*n].ts = ts;
+        (*arr)[*n].val = val;
+        (*n)++;
+        return 0;
+}
+static int collect_points_from_chunk(const char *filepath, long start, long end,
+                                     Point **arr, int *n, int *cap)
+{
+        struct chunkheader header;
+        uint8_t *payload = NULL;
+
+        if (chunkread(filepath, &header, &payload) != 0) {
+                return -1;
+        }
+
+        struct bytebuffer buf = { .data = payload, .size = header.sizebytes };
+        struct bitreader *br = brcreate(&buf);
+
+        struct timestampdecoder tsdec;
+        struct valuedecoder valdec;
+        tsdecoderinit(&tsdec, br);
+        valdecoderinit(&valdec, br);
+
+        for (uint32_t i = 0; i < header.point_count; i++) {
+                long ts = (long)tsdecoderread(&tsdec);
+                double val = valdecoderread(&valdec);
+
+                // IMPORTANT: doc requires [start, end)
+                if (ts >= start && ts < end) {
+                        if (append_point(arr, n, cap, ts, val) != 0) {
+                                free(payload);
+                                brfree(br);
+                                return -1;
+                        }
+                }
+        }
+
+        free(payload);
+        brfree(br);
+        return 0;
+}
+static int collect_points_from_head(HeadBlock *head, long start, long end,
+                                    Point **arr, int *n, int *cap)
+{
+        // caller should lock head->lock; we’ll do it in Head_AGG
+        for (int i = 0; i < head->size; i++) {
+                long ts = head->timestamps[i];
+                if (ts >= start && ts < end) {
+                        if (append_point(arr, n, cap, ts, head->values[i]) != 0) {
+                                return -1;
+                        }
+                }
+        }
+        return 0;
+}
+static int cmp_point_ts(const void *a, const void *b)
+{
+        const Point *pa = (const Point*)a;
+        const Point *pb = (const Point*)b;
+        if (pa->ts < pb->ts) return -1;
+        if (pa->ts > pb->ts) return 1;
+        return 0;
+}
+static char* agg_points(Point *pts, int n,
+                        long start, long end,
+                        int bucketSeconds,
+                        const char *func)
+{
+        // allocate output buffer
+        int out_cap = 2048;
+        char *out = (char*)malloc(out_cap);
+        if (!out) return NULL;
+        out[0] = '\0';
+        int out_len = 0;
+
+        int buckets = 0;
+
+        // iterate buckets in [start, end) stepping by bucketSeconds
+        for (long bstart = start; bstart < end; bstart += bucketSeconds) {
+                long bend = bstart + bucketSeconds;
+
+                // aggregate points with ts in [bstart, bend)
+                int count = 0;
+                double sum = 0.0;
+                double minv = 0.0, maxv = 0.0;
+
+                for (int i = 0; i < n; i++) {
+                        long ts = pts[i].ts;
+                        if (ts < bstart) continue;
+                        if (ts >= bend) break; // because sorted
+                        double v = pts[i].val;
+
+                        if (count == 0) {
+                                minv = maxv = v;
+                        } else {
+                                if (v < minv) minv = v;
+                                if (v > maxv) maxv = v;
+                        }
+                        sum += v;
+                        count++;
+                }
+
+                // Per spec, you typically output buckets that have points.
+                // (Doc example shows only buckets with data.)
+                if (count == 0) continue;
+
+                double result = 0.0;
+                if (strcmp(func, "avg") == 0) {
+                        result = sum / (double)count;
+                } else if (strcmp(func, "min") == 0) {
+                        result = minv;
+                } else if (strcmp(func, "max") == 0) {
+                        result = maxv;
+                } else if (strcmp(func, "sum") == 0) {
+                        result = sum;
+                } else if (strcmp(func, "count") == 0) {
+                        result = (double)count;
+                } else {
+                        // unknown func
+                        free(out);
+                        char *err = (char*)malloc(64);
+                        if (err) snprintf(err, 64, "ERR invalid func\n");
+                        return err;
+                }
+
+                char line[128];
+                // doc shows: start-end value
+                // keep formatting simple; for count we print as integer-ish but using %.2f is ok too
+                if (strcmp(func, "count") == 0) {
+                        snprintf(line, sizeof(line), "%ld-%ld %d\n", bstart, bend, count);
+                } else {
+                        snprintf(line, sizeof(line), "%ld-%ld %.6f\n", bstart, bend, result);
+                }
+
+                int need = (int)strlen(line);
+                if (out_len + need + 64 > out_cap) {
+                        out_cap = (out_len + need + 64) * 2;
+                        char *tmp = (char*)realloc(out, out_cap);
+                        if (!tmp) {
+                                free(out);
+                                return NULL;
+                        }
+                        out = tmp;
+                }
+
+                memcpy(out + out_len, line, need);
+                out_len += need;
+                out[out_len] = '\0';
+                buckets++;
+        }
+
+        // footer like doc: "(N buckets)"
+        char footer[64];
+        snprintf(footer, sizeof(footer), "(%d buckets)\n", buckets);
+
+        int need = (int)strlen(footer);
+        if (out_len + need + 1 > out_cap) {
+                out_cap = out_len + need + 1;
+                char *tmp = (char*)realloc(out, out_cap);
+                if (!tmp) {
+                        free(out);
+                        return NULL;
+                }
+                out = tmp;
+        }
+        memcpy(out + out_len, footer, need + 1);
+
+        return out;
 }

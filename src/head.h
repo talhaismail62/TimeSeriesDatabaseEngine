@@ -4,7 +4,7 @@
 #include<stdbool.h>
 #include <pthread.h>
 
-#define HEAD_CAPACITY 5
+#define HEAD_CAPACITY 50000
 
 typedef struct {
         long *timestamps;

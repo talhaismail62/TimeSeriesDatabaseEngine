@@ -10,7 +10,7 @@ Request* getRequest(const char* buffer)
 {
         parser *p = parseString(buffer);
         Request *request = (Request *)malloc(sizeof(Request));
-
+        request->resultCount = 0;
         if(!request) {
                 free_parser(p);
                 return NULL;
@@ -22,8 +22,9 @@ Request* getRequest(const char* buffer)
 		return NULL;
 	}
 
-        printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
-        printf("RAW: [%s]\n", p->subStrings[0]);
+        
+        // printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
+        // printf("RAW: [%s]\n", p->subStrings[0]);
 
         if(p->size == 4 && strcmp(p->subStrings[0], "PUT") == 0) {
                 request->type = PUT;
@@ -88,7 +89,7 @@ Response ProcessRequest(Request *request, char *dataDir)
         {
         case PUT:
                 handlePUT(request, dataDir);
-                print_metric(request->metric);
+                // print_metric(request->metric);
                 break;
         case QUIT:
                 // handleQuit();
@@ -102,6 +103,10 @@ Response ProcessRequest(Request *request, char *dataDir)
                 break;
         case FLUSH:
                 handleflush(request, dataDir);
+                break;
+        case AGG:
+                response.result = handleAGG(request);
+                break;
         default:
                 break;
         }
@@ -114,20 +119,41 @@ bool handlePUT(Request *request, char* dataDir)
         return Head_PUT(request->metric, request->timestamp, request->value, dataDir);
 }
 
-char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
-        return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
-}
-
-char* handleSTATS(Request *request)
-{
-        request->bucketSeconds = 1;
-        return Head_STATS(request->metric);
+// char* handleGET(Request *request) { // i am using the bucketseconds as the size here, idk why :(
+//         return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->bucketSeconds);
+// }
+//so now i am changing the handleGET to use resultcount as size instead of bucketseconds
+char* handleGET(Request *request) {
+        request->resultCount = 0;
+        return Head_GET(request->metric, request->startTimeStamp, request->endTimeStamp, &request->resultCount);
 }
 void handleQuit()
 {
         // cleanupRegistry();
 }
+char* handleSTATS(Request *request)
+{
+        return Head_STATS(request->metric);
+}
 bool handleflush(Request *request, char* dataDir)
 {
         return headflush(request->metric, dataDir);
+}
+char* handleAGG(Request *request)
+{
+        // basic validation
+        if (request->bucketSeconds <= 0) {
+                char *err = malloc(64);
+                if (err) snprintf(err, 64, "ERR invalid bucket_seconds\n");
+                return err;
+        }
+
+        // call into storage engine
+        return Head_AGG(
+                request->metric,
+                request->startTimeStamp,
+                request->endTimeStamp,
+                request->bucketSeconds,
+                request->func
+        );
 }
