@@ -38,7 +38,7 @@ Response ProcessRequest(Request *request, char* dataDir);
 bool handlePUT(Request *request, char *dataDir);
 
 char *handleGET(Request *request);
-
+char *handleAGG(Request *request);
 void handleQuit();
 
 char *handleSTATS(Request *request);

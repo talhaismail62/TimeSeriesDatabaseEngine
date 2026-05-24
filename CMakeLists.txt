@@ -55,3 +55,4 @@ add_executable(test_timestamp tests/test_timestamp.c src/timestamp.c src/bit_io.
 add_executable(test_value tests/test_value.c src/value.c src/bit_io.c)
 
 add_executable(test_chunk tests/test_chunk.c src/chunk.c)
+add_executable(test_agg tests/test_agg.c src/registry.c src/head.c src/flush.c src/chunk.c src/bit_io.c src/timestamp.c src/value.c)

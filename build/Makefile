@@ -194,6 +194,19 @@ test_chunk/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/build
 .PHONY : test_chunk/fast
 
+#=============================================================================
+# Target rules for targets named test_agg
+
+# Build rule for target.
+test_agg: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_agg
+.PHONY : test_agg
+
+# fast build rule for target.
+test_agg/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/build
+.PHONY : test_agg/fast
+
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
 
@@ -204,6 +217,7 @@ src/bit_io.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.o
 .PHONY : src/bit_io.c.o
 
 src/bit_io.i: src/bit_io.c.i
@@ -216,6 +230,7 @@ src/bit_io.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.i
 .PHONY : src/bit_io.c.i
 
 src/bit_io.s: src/bit_io.c.s
@@ -228,6 +243,7 @@ src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_bit_io.dir/build.make CMakeFiles/test_bit_io.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
 src/chunk.o: src/chunk.c.o
@@ -238,6 +254,7 @@ src/chunk.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.o
 .PHONY : src/chunk.c.o
 
 src/chunk.i: src/chunk.c.i
@@ -248,6 +265,7 @@ src/chunk.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.i
 .PHONY : src/chunk.c.i
 
 src/chunk.s: src/chunk.c.s
@@ -258,6 +276,7 @@ src/chunk.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/chunk.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/chunk.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.s
 .PHONY : src/chunk.c.s
 
 src/client.o: src/client.c.o
@@ -291,6 +310,7 @@ src/flush.o: src/flush.c.o
 src/flush.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.o
 .PHONY : src/flush.c.o
 
 src/flush.i: src/flush.c.i
@@ -300,6 +320,7 @@ src/flush.i: src/flush.c.i
 src/flush.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.i
 .PHONY : src/flush.c.i
 
 src/flush.s: src/flush.c.s
@@ -309,6 +330,7 @@ src/flush.s: src/flush.c.s
 src/flush.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/flush.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.s
 .PHONY : src/flush.c.s
 
 src/head.o: src/head.c.o
@@ -317,6 +339,7 @@ src/head.o: src/head.c.o
 # target to build an object file
 src/head.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/head.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.o
 .PHONY : src/head.c.o
 
 src/head.i: src/head.c.i
@@ -325,6 +348,7 @@ src/head.i: src/head.c.i
 # target to preprocess a source file
 src/head.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/head.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.i
 .PHONY : src/head.c.i
 
 src/head.s: src/head.c.s
@@ -333,6 +357,7 @@ src/head.s: src/head.c.s
 # target to generate assembly for a file
 src/head.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/head.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.s
 .PHONY : src/head.c.s
 
 src/main.o: src/main.c.o
@@ -392,6 +417,7 @@ src/registry.o: src/registry.c.o
 # target to build an object file
 src/registry.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/registry.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.o
 .PHONY : src/registry.c.o
 
 src/registry.i: src/registry.c.i
@@ -400,6 +426,7 @@ src/registry.i: src/registry.c.i
 # target to preprocess a source file
 src/registry.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/registry.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.i
 .PHONY : src/registry.c.i
 
 src/registry.s: src/registry.c.s
@@ -408,6 +435,7 @@ src/registry.s: src/registry.c.s
 # target to generate assembly for a file
 src/registry.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/registry.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.s
 .PHONY : src/registry.c.s
 
 src/request.o: src/request.c.o
@@ -466,6 +494,7 @@ src/timestamp.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.o
 .PHONY : src/timestamp.c.o
 
 src/timestamp.i: src/timestamp.c.i
@@ -476,6 +505,7 @@ src/timestamp.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.i
 .PHONY : src/timestamp.c.i
 
 src/timestamp.s: src/timestamp.c.s
@@ -486,6 +516,7 @@ src/timestamp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/timestamp.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/timestamp.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.s
 .PHONY : src/timestamp.c.s
 
 src/value.o: src/value.c.o
@@ -496,6 +527,7 @@ src/value.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.o
 .PHONY : src/value.c.o
 
 src/value.i: src/value.c.i
@@ -506,6 +538,7 @@ src/value.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.i
 .PHONY : src/value.c.i
 
 src/value.s: src/value.c.s
@@ -516,7 +549,32 @@ src/value.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/value.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/value.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.s
 .PHONY : src/value.c.s
+
+tests/test_agg.o: tests/test_agg.c.o
+.PHONY : tests/test_agg.o
+
+# target to build an object file
+tests/test_agg.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/tests/test_agg.c.o
+.PHONY : tests/test_agg.c.o
+
+tests/test_agg.i: tests/test_agg.c.i
+.PHONY : tests/test_agg.i
+
+# target to preprocess a source file
+tests/test_agg.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/tests/test_agg.c.i
+.PHONY : tests/test_agg.c.i
+
+tests/test_agg.s: tests/test_agg.c.s
+.PHONY : tests/test_agg.s
+
+# target to generate assembly for a file
+tests/test_agg.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/tests/test_agg.c.s
+.PHONY : tests/test_agg.c.s
 
 tests/test_bit_io.o: tests/test_bit_io.c.o
 .PHONY : tests/test_bit_io.o
@@ -622,6 +680,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test_agg"
 	@echo "... test_bit_io"
 	@echo "... test_chunk"
 	@echo "... test_timestamp"
@@ -664,6 +723,9 @@ help:
 	@echo "... src/value.o"
 	@echo "... src/value.i"
 	@echo "... src/value.s"
+	@echo "... tests/test_agg.o"
+	@echo "... tests/test_agg.i"
+	@echo "... tests/test_agg.s"
 	@echo "... tests/test_bit_io.o"
 	@echo "... tests/test_bit_io.i"
 	@echo "... tests/test_bit_io.s"

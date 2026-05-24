@@ -130,7 +130,29 @@ void handleQuit()
 {
         // cleanupRegistry();
 }
+char* handleSTATS(Request *request)
+{
+        return Head_STATS(request->metric);
+}
 bool handleflush(Request *request, char* dataDir)
 {
         return headflush(request->metric, dataDir);
+}
+char* handleAGG(Request *request)
+{
+        // basic validation
+        if (request->bucketSeconds <= 0) {
+                char *err = malloc(64);
+                if (err) snprintf(err, 64, "ERR invalid bucket_seconds\n");
+                return err;
+        }
+
+        // call into storage engine
+        return Head_AGG(
+                request->metric,
+                request->startTimeStamp,
+                request->endTimeStamp,
+                request->bucketSeconds,
+                request->func
+        );
 }

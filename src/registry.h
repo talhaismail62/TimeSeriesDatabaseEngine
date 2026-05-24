@@ -29,7 +29,7 @@ HeadBlock *getMetricFromHashTable(char *key, bool flag);
 bool Head_PUT(char *metricName, long timestamp, double value, char* dataDir);
 
 char *Head_GET(char *metricName, long startTimestamp, long endTimestamp, int *size);
-
+char* Head_AGG(char *metricName,long startTimestamp,long endTimestamp,int bucketSeconds,const char *func);
 void deleteMetric(char *key);
 
 void print_metric(char *metric);
