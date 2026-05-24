@@ -3,14 +3,14 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
-#include<dirent.h>
+#include <dirent.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <limits.h>
+#include <signal.h>
 #include "server.h"
 #include "request.h"
 #include <errno.h>
@@ -21,10 +21,8 @@ volatile bool server_running = true;
 int serverSocket;
 pthread_mutex_t registry_lock02 = PTHREAD_MUTEX_INITIALIZER;
 
-
 void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
 {
-
         for (int i = 0; i < argc; ++i) {
                 if(strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
                         *portNumber = atoi(argv[i + 1]);
@@ -45,76 +43,89 @@ void* handleClient(void* arg) {
         strcpy(dataDir, args->path);
 
         free(args);
-        
-        Request *request = NULL;
-        char buffer[BUFFER_SIZE];
+
+        char inbuf[8192];
+        int inlen = 0;
+        inbuf[0] = '\0';
 
         while (1) {
-                int bytes = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
-                // printf("%d", bytes);
+                char tmp[BUFFER_SIZE];
+                int bytes = recv(clientSocket, tmp, BUFFER_SIZE, 0);
 
                 if (bytes <= 0) {
                         printf("Client disconnected\n");
                         break;
                 }
 
-                buffer[bytes] = '\0';
-                request = getRequest(buffer);
-                if (request == NULL) {
-                        send(clientSocket, "Invalid Command!", 17, 0);
+                if (inlen + bytes >= (int)sizeof(inbuf) - 1) {
+                        inlen = 0;
+                        inbuf[0] = '\0';
+                        send(clientSocket, "ERR line too long\n", 18, 0);
                         continue;
                 }
-                
-                printf("Client says: %s\n", buffer);
 
-                Response response = ProcessRequest(request, dataDir);
+                memcpy(inbuf + inlen, tmp, bytes);
+                inlen += bytes;
+                inbuf[inlen] = '\0';
 
-                if (response.runFurther == false)
-                {
-                        send(clientSocket,"quit" , 4, 0);
-                        break;
-                }
-                if(response.result == NULL) {
-                        if (send(clientSocket, "ok", 2, 0) < 0) {
-                                perror("send failed");
-                                break;
+                char *line_start = inbuf;
+
+                while (1) {
+                        char *nl = memchr(line_start, '\n', inbuf + inlen - line_start);
+                        if (!nl) break;
+
+                        int linelen = (int)(nl - line_start) + 1;
+
+                        char line[1024];
+                        int copylen = linelen < (int)sizeof(line) - 1 ? linelen : (int)sizeof(line) - 1;
+                        memcpy(line, line_start, copylen);
+                        line[copylen] = '\0';
+
+                        line_start = nl + 1;
+
+                        Request *request = getRequest(line);
+                        if (request == NULL) {
+                                send(clientSocket, "Invalid Command!\n", 17, 0);
+                                continue;
                         }
-                }
-                else {
-                        // Always send the result string if it exists.
-                        if (send(clientSocket, response.result, strlen(response.result), 0) < 0) {
-                                perror("send failed");
-                                break;
+
+                        Response response = ProcessRequest(request, dataDir);
+
+                        if (response.runFurther == false)
+                        {
+                                send(clientSocket,"quit\n" , 5, 0);
+                                free(request);
+                                if (response.result) free(response.result);
+                                close(clientSocket);
+                                return NULL;
                         }
-                        printf("%s\n", response.result);
-                        free(response.result);
+
+                        if(response.result == NULL) {
+                                if (send(clientSocket, "ok", 2, 0) < 0) {
+                                        perror("send failed");
+                                        free(request);
+                                        break;
+                                }
+                        }
+                        else {
+                                if (send(clientSocket, response.result, strlen(response.result), 0) < 0) {
+                                        perror("send failed");
+                                        free(response.result);
+                                        free(request);
+                                        break;
+                                }
+                                free(response.result);
+                        }
+
+                        free(request);
                 }
 
-                free(request);
-                //  PUT cpu.usage 1728000000 45.2 
-                // GET cpu.usage 1728000000 1728000005
-                // send(clientSocket, buffer, bytes, 0);
-
-                // PUT cpu.usage 1728000000 45.2
-                // ok
-                // > PUT cpu.usage 1728000001 34.5
-                // ok
-                // > PUT cpu.usage 1728000002 34.3
-                // ok
-                // > PUT cpu.usage 1728000005 45.0
-                // ok
-                // > PUT cpu.usage 1728000007 31.0
-                // ok
-                // > GET cpu.usage 1728000000 1728000005
-                // > STATS cpu.usage
-
-
-                // PUT cpu.usage 1728000008 31.0
-                // PUT cpu.usage 1728000009 32.0
-                // PUT cpu.usage 1728000010 33.0
-                // PUT cpu.usage 1728000011 34.0
-                // PUT cpu.usage 1728000012 36.0
+                int remaining = (int)(inbuf + inlen - line_start);
+                if (remaining > 0) memmove(inbuf, line_start, remaining);
+                inlen = remaining;
+                inbuf[inlen] = '\0';
         }
+
         close(clientSocket);
         return NULL;
 }
@@ -133,7 +144,6 @@ bool createPthreadForUsers(int clientSocket, char* dataFilePath)
         strncpy(args->path, dataFilePath, 256 - 1);
         args->path[256 - 1] = '\0';
 
-        
         if (pthread_create(&tid, NULL, handleClient, (void*)args) != 0) {
                 perror("Thread creation failed");
                 free(args);
@@ -155,8 +165,6 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         serverAddress.sin_port = htons(portNumber);
         serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-        // bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-        // listen(serverSocket, 10);
         int opt = 1;
         setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -181,9 +189,8 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         {
                 addressSize = sizeof(clientAddress);
                 clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &addressSize);
-                // printf("cs : %d", clientSocket);
                 if (clientSocket < 0) {
-                        if (!server_running) 
+                        if (!server_running)
                                 break;
                         if (errno == EINTR || errno == EBADF)
                                 break;
@@ -193,16 +200,15 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
                 printf("New client connected!\n");
 
                 createPthreadForUsers(clientSocket, dataFilePath);
-                
         }
-        
+
         printf("Server shutting down...\n");
         cleanupRegistry(dataFilePath);
-        
 }
 
 void handle_shutdown(int sig)
 {
+    (void)sig;
     server_running = false;
     close(serverSocket);
 }
@@ -225,17 +231,16 @@ void loadRegistry(char* dataFilePath) {
                 struct stat st;
                 if (stat(metric_path, &st) == 0 && S_ISDIR(st.st_mode)) {
                         getMetricFromHashTable(entry->d_name, true);
-                        
+
                         DIR *mDir = opendir(metric_path);
                         if (!mDir) continue;
 
                         struct dirent *mEntry;
                         while ((mEntry = readdir(mDir)) != NULL) {
                                 if (strstr(mEntry->d_name, ".chunk")) {
-                                char chunk_full_path[1024];
-                                snprintf(chunk_full_path, sizeof(chunk_full_path), "%s/%s", metric_path, mEntry->d_name);
-                                
-                                loadChunkMetadata(entry->d_name, chunk_full_path);
+                                        char chunk_full_path[1024];
+                                        snprintf(chunk_full_path, sizeof(chunk_full_path), "%s/%s", metric_path, mEntry->d_name);
+                                        loadChunkMetadata(entry->d_name, chunk_full_path);
                                 }
                         }
                         closedir(mDir);
@@ -245,7 +250,6 @@ void loadRegistry(char* dataFilePath) {
         closedir(dir);
 }
 
-
 void loadChunkMetadata(char *metricName, char *chunkPath) {
 
         pthread_mutex_lock(&registry_lock02);
@@ -253,7 +257,7 @@ void loadChunkMetadata(char *metricName, char *chunkPath) {
         HASH_FIND_STR(registry, metricName, entry);
         pthread_mutex_unlock(&registry_lock02);
 
-        if (!entry) 
+        if (!entry)
                 return;
 
         struct chunkheader header;
@@ -269,10 +273,10 @@ void loadChunkMetadata(char *metricName, char *chunkPath) {
                 entry->chunks[entry->chunkCount].start_ts = (long)header.startts;
                 entry->chunks[entry->chunkCount].end_ts = (long)header.endts;
                 strncpy(entry->chunks[entry->chunkCount].filename, chunkPath, 255);
-                
+
                 entry->chunkCount++;
-                
-                if (payload) 
+
+                if (payload)
                         free(payload);
         }
 }

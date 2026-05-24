@@ -182,6 +182,19 @@ test_value/fast:
 .PHONY : test_value/fast
 
 #=============================================================================
+# Target rules for targets named tsdb-benchmark
+
+# Build rule for target.
+tsdb-benchmark: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tsdb-benchmark
+.PHONY : tsdb-benchmark
+
+# fast build rule for target.
+tsdb-benchmark/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-benchmark.dir/build.make CMakeFiles/tsdb-benchmark.dir/build
+.PHONY : tsdb-benchmark/fast
+
+#=============================================================================
 # Target rules for targets named test_chunk
 
 # Build rule for target.
@@ -206,6 +219,30 @@ test_agg: cmake_check_build_system
 test_agg/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/build
 .PHONY : test_agg/fast
+
+benchmark/benchmark.o: benchmark/benchmark.c.o
+.PHONY : benchmark/benchmark.o
+
+# target to build an object file
+benchmark/benchmark.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-benchmark.dir/build.make CMakeFiles/tsdb-benchmark.dir/benchmark/benchmark.c.o
+.PHONY : benchmark/benchmark.c.o
+
+benchmark/benchmark.i: benchmark/benchmark.c.i
+.PHONY : benchmark/benchmark.i
+
+# target to preprocess a source file
+benchmark/benchmark.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-benchmark.dir/build.make CMakeFiles/tsdb-benchmark.dir/benchmark/benchmark.c.i
+.PHONY : benchmark/benchmark.c.i
+
+benchmark/benchmark.s: benchmark/benchmark.c.s
+.PHONY : benchmark/benchmark.s
+
+# target to generate assembly for a file
+benchmark/benchmark.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-benchmark.dir/build.make CMakeFiles/tsdb-benchmark.dir/benchmark/benchmark.c.s
+.PHONY : benchmark/benchmark.c.s
 
 src/bit_io.o: src/bit_io.c.o
 .PHONY : src/bit_io.o
@@ -686,7 +723,11 @@ help:
 	@echo "... test_timestamp"
 	@echo "... test_value"
 	@echo "... tsdb"
+	@echo "... tsdb-benchmark"
 	@echo "... tsdb-cli"
+	@echo "... benchmark/benchmark.o"
+	@echo "... benchmark/benchmark.i"
+	@echo "... benchmark/benchmark.s"
 	@echo "... src/bit_io.o"
 	@echo "... src/bit_io.i"
 	@echo "... src/bit_io.s"

@@ -22,8 +22,9 @@ Request* getRequest(const char* buffer)
 		return NULL;
 	}
 
-        printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
-        printf("RAW: [%s]\n", p->subStrings[0]);
+        
+        // printf("size : %d, string: %s\n", p->size, p->subStrings[0]);
+        // printf("RAW: [%s]\n", p->subStrings[0]);
 
         if(p->size == 4 && strcmp(p->subStrings[0], "PUT") == 0) {
                 request->type = PUT;
@@ -88,7 +89,7 @@ Response ProcessRequest(Request *request, char *dataDir)
         {
         case PUT:
                 handlePUT(request, dataDir);
-                print_metric(request->metric);
+                // print_metric(request->metric);
                 break;
         case QUIT:
                 // handleQuit();
