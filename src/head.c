@@ -21,7 +21,7 @@ HeadBlock* getNewHeadBlock() {
 
 bool PUT_value(HeadBlock* head, long timestamp, double value)
 {
-        if (head->size > 0 && timestamp <= head->lastTimestamp) {
+        if (head->size > 0 && timestamp < head->lastTimestamp) {
                 return false;
         }
         if(head->size >= HEAD_CAPACITY) {
@@ -55,7 +55,7 @@ char* GET_value(HeadBlock *head, long startTimestamp, long endTimestamp, int *si
 
         for (int i = 0; i < head->size; i++) {
 
-                if (head->timestamps[i] >= startTimestamp && head->timestamps[i] <= endTimestamp) {
+                if (head->timestamps[i] >= startTimestamp && head->timestamps[i] < endTimestamp) {
 
                         char *tmp = longToString(head->timestamps[i]);
                         char *tmp1 = doubleToString(head->values[i]);

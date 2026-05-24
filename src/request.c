@@ -102,6 +102,10 @@ Response ProcessRequest(Request *request, char *dataDir)
                 break;
         case FLUSH:
                 handleflush(request, dataDir);
+                break;
+        case AGG:
+                response.result = handleAGG(request);
+                break;
         default:
                 break;
         }

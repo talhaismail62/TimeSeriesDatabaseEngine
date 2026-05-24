@@ -163,7 +163,7 @@ char* decompressChunk(const char* filepath, long start, long end, int* chunkPoin
                 long ts = (long)tsdecoderread(&tsdec);
                 double val = valdecoderread(&valdec);
 
-                if (ts >= start && ts <= end) {
+                if (ts >= start && ts < end) {
                         count++;
                         char temp[128];
                         int n = snprintf(temp, sizeof(temp), "%ld\t%.2f\n", ts, val);
