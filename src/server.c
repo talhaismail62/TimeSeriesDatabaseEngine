@@ -15,11 +15,16 @@
 #include "request.h"
 #include <errno.h>
 #include "chunk.h"
+#include "wal.h"
+#include "retention.h"
+#include "downsample.h"
 
 #define BUFFER_SIZE 1024
 volatile bool server_running = true;
 int serverSocket;
 pthread_mutex_t registry_lock02 = PTHREAD_MUTEX_INITIALIZER;
+
+static RetentionConfig g_retention_cfg = {.count = 0};
 
 void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
 {
@@ -30,6 +35,12 @@ void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePat
                 }
                 else if(strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
                         strcpy(dataFilePath, argv[i + 1]);
+                        ++i;
+                }
+                else if(strcmp(argv[i], "--retention") == 0 && i + 1 < argc) {
+                        if (retention_add_rule(&g_retention_cfg, argv[i + 1]) != 0)
+                                fprintf(stderr, "warn: bad --retention spec '%s' (want metric=seconds)\n",
+                                        argv[i + 1]);
                         ++i;
                 }
         }
@@ -184,7 +195,10 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         signal(SIGTERM, handle_shutdown);
         socklen_t addressSize;
 
+        registry_init(dataFilePath);
         loadRegistry(dataFilePath);
+        retention_start(&g_retention_cfg, dataFilePath);
+        downsample_start(dataFilePath);
         while (server_running)
         {
                 addressSize = sizeof(clientAddress);
@@ -203,6 +217,8 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         }
 
         printf("Server shutting down...\n");
+        retention_stop();
+        downsample_stop();
         cleanupRegistry(dataFilePath);
 }
 
@@ -244,6 +260,13 @@ void loadRegistry(char* dataFilePath) {
                                 }
                         }
                         closedir(mDir);
+
+                        /* Replay any WAL left from a previous run that crashed
+                           before the head block was flushed. */
+                        HeadBlock *hb = getMetricFromHashTable(entry->d_name, false);
+                        if (hb)
+                                wal_replay(dataFilePath, entry->d_name, hb);
+
                         printf("Metric directory and chunks loaded for: %s\n", entry->d_name);
                 }
         }

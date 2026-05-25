@@ -13,6 +13,9 @@
 #include "bit_io.h"
 #include "chunk.h"
 #include "value.h"
+#include "wal.h"
+#include "downsample.h"
+#include <dirent.h>
 
 typedef struct
 {
@@ -30,6 +33,14 @@ static char *agg_points(Point *pts, int n, long start, long end, int bucketSecon
 
 metric_registry *registry = NULL;
 pthread_mutex_t registry_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static char g_dataDir[512] = {0};
+
+void registry_init(const char *dataDir)
+{
+    strncpy(g_dataDir, dataDir, sizeof(g_dataDir) - 1);
+    g_dataDir[sizeof(g_dataDir) - 1] = '\0';
+}
 
 HeadBlock *getMetricFromHashTable(char *key, bool flag)
 {
@@ -82,6 +93,9 @@ bool Head_PUT(char *metricName, long timestamp, double value, char *dataDir)
                 pthread_mutex_lock(&head->lock);
                 res = PUT_value(head, timestamp, value);
         }
+
+        if (res)
+                wal_append(dataDir, metricName, timestamp, value);
 
         pthread_mutex_unlock(&head->lock);
         return res;
@@ -191,22 +205,49 @@ char *Head_AGG(char *metricName,
         Point *pts = NULL;
         int n = 0, cap = 0;
 
-        // 1) disk chunks
-        for (int i = 0; i < entry->chunkCount; i++)
-        {
-                // overlap check: chunk overlaps [start,end)
-                if (entry->chunks[i].start_ts < endTimestamp &&
-                    entry->chunks[i].end_ts >= startTimestamp)
+        // 1) disk chunks — use coarse (_1m) data for large ranges if available
+        int use_coarse = (g_dataDir[0] != '\0') &&
+                         downsample_should_use(g_dataDir, metricName,
+                                               startTimestamp, endTimestamp,
+                                               bucketSeconds);
+
+        if (use_coarse) {
+                /* Scan the coarse directory for chunk files. */
+                char coarseDir[512];
+                downsample_coarse_dir(g_dataDir, metricName,
+                                      coarseDir, sizeof(coarseDir));
+
+                DIR *d = opendir(coarseDir);
+                if (d) {
+                        struct dirent *de;
+                        while ((de = readdir(d)) != NULL) {
+                                if (!strstr(de->d_name, ".chunk")) continue;
+                                char path[768];
+                                snprintf(path, sizeof(path), "%s/%s",
+                                         coarseDir, de->d_name);
+                                /* collect_points_from_chunk filters by [start,end) internally */
+                                collect_points_from_chunk(path,
+                                                          startTimestamp, endTimestamp,
+                                                          &pts, &n, &cap);
+                        }
+                        closedir(d);
+                }
+        } else {
+                for (int i = 0; i < entry->chunkCount; i++)
                 {
-                        if (collect_points_from_chunk(entry->chunks[i].filename,
-                                                      startTimestamp, endTimestamp,
-                                                      &pts, &n, &cap) != 0)
+                        if (entry->chunks[i].start_ts < endTimestamp &&
+                            entry->chunks[i].end_ts >= startTimestamp)
                         {
-                                free(pts);
-                                char *err = (char *)malloc(64);
-                                if (err)
-                                        snprintf(err, 64, "ERR disk read\n");
-                                return err;
+                                if (collect_points_from_chunk(entry->chunks[i].filename,
+                                                              startTimestamp, endTimestamp,
+                                                              &pts, &n, &cap) != 0)
+                                {
+                                        free(pts);
+                                        char *err = (char *)malloc(64);
+                                        if (err)
+                                                snprintf(err, 64, "ERR disk read\n");
+                                        return err;
+                                }
                         }
                 }
         }
@@ -481,10 +522,8 @@ bool headflush(char *metricname, char *dataDir)
                 strcpy(entry->chunks[entry->chunkCount].filename, filepath);
                 entry->chunkCount++;
                 head->size = 0;
-                // just made the last timestamp zero
-                // so that the new timestamps are also accepted
-                // by the engine
                 head->lastTimestamp = 0;
+                wal_truncate(dataDir, metricname);
         }
 
         pthread_mutex_unlock(&head->lock);

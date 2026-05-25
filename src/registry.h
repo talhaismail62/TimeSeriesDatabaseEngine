@@ -22,6 +22,11 @@ typedef struct {
 } metric_registry;
 
 extern metric_registry *registry;
+extern pthread_mutex_t  registry_lock;
+
+/* Call once at startup with the data directory path.
+   Required before Head_AGG can dispatch to coarse chunks. */
+void registry_init(const char *dataDir);
 
 
 HeadBlock *getMetricFromHashTable(char *key, bool flag);
