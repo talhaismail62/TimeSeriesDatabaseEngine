@@ -21,7 +21,8 @@ static void ensure_metric_dir(const char *dataDir, const char *metric)
 {
     char dir[512];
     snprintf(dir, sizeof(dir), "%s/%s", dataDir, metric);
-    if (mkdir(dir, 0777) != 0 && errno != EEXIST) {
+    if (mkdir(dir, 0777) != 0 && errno != EEXIST)
+    {
         perror("wal: mkdir");
     }
 }
@@ -34,14 +35,16 @@ void wal_append(const char *dataDir, const char *metric, long ts, double val)
     build_wal_path(path, sizeof(path), dataDir, metric);
 
     FILE *f = fopen(path, "ab");
-    if (!f) {
+    if (!f)
+    {
         perror("wal_append: fopen");
         return;
     }
 
     int64_t ts64 = (int64_t)ts;
     if (fwrite(&ts64, sizeof(ts64), 1, f) != 1 ||
-        fwrite(&val,  sizeof(val),  1, f) != 1) {
+        fwrite(&val, sizeof(val), 1, f) != 1)
+    {
         perror("wal_append: fwrite");
         fclose(f);
         return;
@@ -58,17 +61,19 @@ void wal_replay(const char *dataDir, const char *metric, HeadBlock *head)
     build_wal_path(path, sizeof(path), dataDir, metric);
 
     FILE *f = fopen(path, "rb");
-    if (!f) {
+    if (!f)
+    {
         /* No WAL file is normal on a clean start. */
         return;
     }
 
     int64_t ts64;
-    double  val;
+    double val;
     int replayed = 0;
 
     while (fread(&ts64, sizeof(ts64), 1, f) == 1 &&
-           fread(&val,  sizeof(val),  1, f) == 1) {
+           fread(&val, sizeof(val), 1, f) == 1)
+    {
         long ts = (long)ts64;
         /* Skip points already covered by a flushed chunk. */
         if (ts <= head->lastTimestamp)
@@ -89,7 +94,8 @@ void wal_truncate(const char *dataDir, const char *metric)
     char path[512];
     build_wal_path(path, sizeof(path), dataDir, metric);
 
-    if (remove(path) != 0 && errno != ENOENT) {
+    if (remove(path) != 0 && errno != ENOENT)
+    {
         perror("wal_truncate: remove");
     }
 }

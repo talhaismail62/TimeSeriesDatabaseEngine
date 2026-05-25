@@ -233,6 +233,45 @@ test_agg/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/build
 .PHONY : test_agg/fast
 
+#=============================================================================
+# Target rules for targets named test_wal
+
+# Build rule for target.
+test_wal: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_wal
+.PHONY : test_wal
+
+# fast build rule for target.
+test_wal/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/build
+.PHONY : test_wal/fast
+
+#=============================================================================
+# Target rules for targets named test_retention
+
+# Build rule for target.
+test_retention: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_retention
+.PHONY : test_retention
+
+# fast build rule for target.
+test_retention/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/build
+.PHONY : test_retention/fast
+
+#=============================================================================
+# Target rules for targets named test_downsample
+
+# Build rule for target.
+test_downsample: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_downsample
+.PHONY : test_downsample
+
+# fast build rule for target.
+test_downsample/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/build
+.PHONY : test_downsample/fast
+
 benchmark/benchmark.o: benchmark/benchmark.c.o
 .PHONY : benchmark/benchmark.o
 
@@ -269,6 +308,8 @@ src/bit_io.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/bit_io.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/bit_io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/bit_io.c.o
 .PHONY : src/bit_io.c.o
 
 src/bit_io.i: src/bit_io.c.i
@@ -283,6 +324,8 @@ src/bit_io.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/bit_io.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/bit_io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/bit_io.c.i
 .PHONY : src/bit_io.c.i
 
 src/bit_io.s: src/bit_io.c.s
@@ -297,6 +340,8 @@ src/bit_io.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/bit_io.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/bit_io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/bit_io.c.s
 .PHONY : src/bit_io.c.s
 
 src/chunk.o: src/chunk.c.o
@@ -309,6 +354,8 @@ src/chunk.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/chunk.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/chunk.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/chunk.c.o
 .PHONY : src/chunk.c.o
 
 src/chunk.i: src/chunk.c.i
@@ -321,6 +368,8 @@ src/chunk.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/chunk.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/chunk.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/chunk.c.i
 .PHONY : src/chunk.c.i
 
 src/chunk.s: src/chunk.c.s
@@ -333,6 +382,8 @@ src/chunk.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/chunk.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/src/chunk.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/chunk.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/chunk.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/chunk.c.s
 .PHONY : src/chunk.c.s
 
 src/client.o: src/client.c.o
@@ -359,6 +410,45 @@ src/client.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/client.c.s
 .PHONY : src/client.c.s
 
+src/downsample.o: src/downsample.c.o
+.PHONY : src/downsample.o
+
+# target to build an object file
+src/downsample.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/downsample.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/downsample.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/downsample.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/downsample.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/downsample.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/downsample.c.o
+.PHONY : src/downsample.c.o
+
+src/downsample.i: src/downsample.c.i
+.PHONY : src/downsample.i
+
+# target to preprocess a source file
+src/downsample.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/downsample.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/downsample.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/downsample.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/downsample.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/downsample.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/downsample.c.i
+.PHONY : src/downsample.c.i
+
+src/downsample.s: src/downsample.c.s
+.PHONY : src/downsample.s
+
+# target to generate assembly for a file
+src/downsample.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/downsample.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/downsample.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/downsample.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/downsample.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/downsample.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/downsample.c.s
+.PHONY : src/downsample.c.s
+
 src/flush.o: src/flush.c.o
 .PHONY : src/flush.o
 
@@ -368,6 +458,8 @@ src/flush.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/flush.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/flush.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/flush.c.o
 .PHONY : src/flush.c.o
 
 src/flush.i: src/flush.c.i
@@ -379,6 +471,8 @@ src/flush.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/flush.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/flush.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/flush.c.i
 .PHONY : src/flush.c.i
 
 src/flush.s: src/flush.c.s
@@ -390,6 +484,8 @@ src/flush.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/flush.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/flush.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/flush.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/flush.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/flush.c.s
 .PHONY : src/flush.c.s
 
 src/head.o: src/head.c.o
@@ -401,6 +497,9 @@ src/head.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/head.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/head.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/head.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/head.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/head.c.o
 .PHONY : src/head.c.o
 
 src/head.i: src/head.c.i
@@ -412,6 +511,9 @@ src/head.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/head.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/head.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/head.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/head.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/head.c.i
 .PHONY : src/head.c.i
 
 src/head.s: src/head.c.s
@@ -423,6 +525,9 @@ src/head.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/head.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/head.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/head.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/head.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/head.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/head.c.s
 .PHONY : src/head.c.s
 
 src/main.o: src/main.c.o
@@ -488,6 +593,8 @@ src/registry.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/registry.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/registry.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/registry.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/registry.c.o
 .PHONY : src/registry.c.o
 
 src/registry.i: src/registry.c.i
@@ -499,6 +606,8 @@ src/registry.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/registry.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/registry.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/registry.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/registry.c.i
 .PHONY : src/registry.c.i
 
 src/registry.s: src/registry.c.s
@@ -510,6 +619,8 @@ src/registry.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/registry.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/registry.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/registry.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/registry.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/registry.c.s
 .PHONY : src/registry.c.s
 
 src/request.o: src/request.c.o
@@ -535,6 +646,39 @@ src/request.s: src/request.c.s
 src/request.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/request.c.s
 .PHONY : src/request.c.s
+
+src/retention.o: src/retention.c.o
+.PHONY : src/retention.o
+
+# target to build an object file
+src/retention.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/retention.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/retention.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/retention.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/retention.c.o
+.PHONY : src/retention.c.o
+
+src/retention.i: src/retention.c.i
+.PHONY : src/retention.i
+
+# target to preprocess a source file
+src/retention.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/retention.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/retention.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/retention.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/retention.c.i
+.PHONY : src/retention.c.i
+
+src/retention.s: src/retention.c.s
+.PHONY : src/retention.s
+
+# target to generate assembly for a file
+src/retention.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/retention.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/retention.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/retention.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/retention.c.s
+.PHONY : src/retention.c.s
 
 src/server.o: src/server.c.o
 .PHONY : src/server.o
@@ -570,6 +714,8 @@ src/timestamp.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/timestamp.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/timestamp.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/timestamp.c.o
 .PHONY : src/timestamp.c.o
 
 src/timestamp.i: src/timestamp.c.i
@@ -582,6 +728,8 @@ src/timestamp.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/timestamp.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/timestamp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/timestamp.c.i
 .PHONY : src/timestamp.c.i
 
 src/timestamp.s: src/timestamp.c.s
@@ -594,6 +742,8 @@ src/timestamp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timestamp.dir/build.make CMakeFiles/test_timestamp.dir/src/timestamp.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/timestamp.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/timestamp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/timestamp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/timestamp.c.s
 .PHONY : src/timestamp.c.s
 
 src/value.o: src/value.c.o
@@ -606,6 +756,8 @@ src/value.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/value.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/value.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/value.c.o
 .PHONY : src/value.c.o
 
 src/value.i: src/value.c.i
@@ -618,6 +770,8 @@ src/value.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/value.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/value.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/value.c.i
 .PHONY : src/value.c.i
 
 src/value.s: src/value.c.s
@@ -630,7 +784,51 @@ src/value.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/src/value.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/value.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/value.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/value.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/value.c.s
 .PHONY : src/value.c.s
+
+src/wal.o: src/wal.c.o
+.PHONY : src/wal.o
+
+# target to build an object file
+src/wal.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/wal.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/wal.c.o
+.PHONY : src/wal.c.o
+
+src/wal.i: src/wal.c.i
+.PHONY : src/wal.i
+
+# target to preprocess a source file
+src/wal.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/wal.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/wal.c.i
+.PHONY : src/wal.c.i
+
+src/wal.s: src/wal.c.s
+.PHONY : src/wal.s
+
+# target to generate assembly for a file
+src/wal.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb.dir/build.make CMakeFiles/tsdb.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tsdb-cli.dir/build.make CMakeFiles/tsdb-cli.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_agg.dir/build.make CMakeFiles/test_agg.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/src/wal.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/src/wal.c.s
+.PHONY : src/wal.c.s
 
 tests/test_agg.o: tests/test_agg.c.o
 .PHONY : tests/test_agg.o
@@ -704,6 +902,30 @@ tests/test_chunk.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_chunk.dir/build.make CMakeFiles/test_chunk.dir/tests/test_chunk.c.s
 .PHONY : tests/test_chunk.c.s
 
+tests/test_downsample.o: tests/test_downsample.c.o
+.PHONY : tests/test_downsample.o
+
+# target to build an object file
+tests/test_downsample.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/tests/test_downsample.c.o
+.PHONY : tests/test_downsample.c.o
+
+tests/test_downsample.i: tests/test_downsample.c.i
+.PHONY : tests/test_downsample.i
+
+# target to preprocess a source file
+tests/test_downsample.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/tests/test_downsample.c.i
+.PHONY : tests/test_downsample.c.i
+
+tests/test_downsample.s: tests/test_downsample.c.s
+.PHONY : tests/test_downsample.s
+
+# target to generate assembly for a file
+tests/test_downsample.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_downsample.dir/build.make CMakeFiles/test_downsample.dir/tests/test_downsample.c.s
+.PHONY : tests/test_downsample.c.s
+
 tests/test_gorilla.o: tests/test_gorilla.c.o
 .PHONY : tests/test_gorilla.o
 
@@ -727,6 +949,30 @@ tests/test_gorilla.s: tests/test_gorilla.c.s
 tests/test_gorilla.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gorilla.dir/build.make CMakeFiles/test_gorilla.dir/tests/test_gorilla.c.s
 .PHONY : tests/test_gorilla.c.s
+
+tests/test_retention.o: tests/test_retention.c.o
+.PHONY : tests/test_retention.o
+
+# target to build an object file
+tests/test_retention.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/tests/test_retention.c.o
+.PHONY : tests/test_retention.c.o
+
+tests/test_retention.i: tests/test_retention.c.i
+.PHONY : tests/test_retention.i
+
+# target to preprocess a source file
+tests/test_retention.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/tests/test_retention.c.i
+.PHONY : tests/test_retention.c.i
+
+tests/test_retention.s: tests/test_retention.c.s
+.PHONY : tests/test_retention.s
+
+# target to generate assembly for a file
+tests/test_retention.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_retention.dir/build.make CMakeFiles/test_retention.dir/tests/test_retention.c.s
+.PHONY : tests/test_retention.c.s
 
 tests/test_timestamp.o: tests/test_timestamp.c.o
 .PHONY : tests/test_timestamp.o
@@ -776,6 +1022,30 @@ tests/test_value.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_value.dir/build.make CMakeFiles/test_value.dir/tests/test_value.c.s
 .PHONY : tests/test_value.c.s
 
+tests/test_wal.o: tests/test_wal.c.o
+.PHONY : tests/test_wal.o
+
+# target to build an object file
+tests/test_wal.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/tests/test_wal.c.o
+.PHONY : tests/test_wal.c.o
+
+tests/test_wal.i: tests/test_wal.c.i
+.PHONY : tests/test_wal.i
+
+# target to preprocess a source file
+tests/test_wal.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/tests/test_wal.c.i
+.PHONY : tests/test_wal.c.i
+
+tests/test_wal.s: tests/test_wal.c.s
+.PHONY : tests/test_wal.s
+
+# target to generate assembly for a file
+tests/test_wal.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_wal.dir/build.make CMakeFiles/test_wal.dir/tests/test_wal.c.s
+.PHONY : tests/test_wal.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -787,9 +1057,12 @@ help:
 	@echo "... test_agg"
 	@echo "... test_bit_io"
 	@echo "... test_chunk"
+	@echo "... test_downsample"
 	@echo "... test_gorilla"
+	@echo "... test_retention"
 	@echo "... test_timestamp"
 	@echo "... test_value"
+	@echo "... test_wal"
 	@echo "... tsdb"
 	@echo "... tsdb-benchmark"
 	@echo "... tsdb-cli"
@@ -805,6 +1078,9 @@ help:
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
+	@echo "... src/downsample.o"
+	@echo "... src/downsample.i"
+	@echo "... src/downsample.s"
 	@echo "... src/flush.o"
 	@echo "... src/flush.i"
 	@echo "... src/flush.s"
@@ -823,6 +1099,9 @@ help:
 	@echo "... src/request.o"
 	@echo "... src/request.i"
 	@echo "... src/request.s"
+	@echo "... src/retention.o"
+	@echo "... src/retention.i"
+	@echo "... src/retention.s"
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
@@ -832,6 +1111,9 @@ help:
 	@echo "... src/value.o"
 	@echo "... src/value.i"
 	@echo "... src/value.s"
+	@echo "... src/wal.o"
+	@echo "... src/wal.i"
+	@echo "... src/wal.s"
 	@echo "... tests/test_agg.o"
 	@echo "... tests/test_agg.i"
 	@echo "... tests/test_agg.s"
@@ -841,15 +1123,24 @@ help:
 	@echo "... tests/test_chunk.o"
 	@echo "... tests/test_chunk.i"
 	@echo "... tests/test_chunk.s"
+	@echo "... tests/test_downsample.o"
+	@echo "... tests/test_downsample.i"
+	@echo "... tests/test_downsample.s"
 	@echo "... tests/test_gorilla.o"
 	@echo "... tests/test_gorilla.i"
 	@echo "... tests/test_gorilla.s"
+	@echo "... tests/test_retention.o"
+	@echo "... tests/test_retention.i"
+	@echo "... tests/test_retention.s"
 	@echo "... tests/test_timestamp.o"
 	@echo "... tests/test_timestamp.i"
 	@echo "... tests/test_timestamp.s"
 	@echo "... tests/test_value.o"
 	@echo "... tests/test_value.i"
 	@echo "... tests/test_value.s"
+	@echo "... tests/test_wal.o"
+	@echo "... tests/test_wal.i"
+	@echo "... tests/test_wal.s"
 .PHONY : help
 
 

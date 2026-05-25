@@ -248,6 +248,7 @@ int main(int argc, char **argv)
             {
                 printf("BENCHMARK SENDING COMPLIANT: PUT %s %ld %.6f\n", metric_names[m], ts, v);
             }
+            printf("INSERTING:  PUT %s %ld %.6f\n", metric_names[m], ts, v);
 
             char line[128];
             int n = snprintf(line, sizeof(line), "PUT %s %ld %.6f\n", metric_names[m], ts, v);

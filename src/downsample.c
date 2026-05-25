@@ -1,6 +1,9 @@
+#include <sys/types.h>
+#include <dirent.h>
 #include "downsample.h"
 #include "registry.h"
 #include "chunk.h"
+
 #include "flush.h"
 #include "bit_io.h"
 #include "timestamp.h"
