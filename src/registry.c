@@ -14,34 +14,37 @@
 #include "chunk.h"
 #include "value.h"
 
-typedef struct {
+typedef struct
+{
         long ts;
         double val;
 } Point;
 
 static int append_point(Point **arr, int *n, int *cap, long ts, double val);
-static int collect_points_from_chunk(const char *filepath, long start, long end,Point **arr, int *n, int *cap);
-static int collect_points_from_head(HeadBlock *head, long start, long end,Point **arr, int *n, int *cap);
+static int collect_points_from_chunk(const char *filepath, long start, long end, Point **arr, int *n, int *cap);
+static int collect_points_from_head(HeadBlock *head, long start, long end, Point **arr, int *n, int *cap);
 
 static int cmp_point_ts(const void *a, const void *b);
 
-static char* agg_points(Point *pts, int n,long start, long end,int bucketSeconds,const char *func);
+static char *agg_points(Point *pts, int n, long start, long end, int bucketSeconds, const char *func);
 
 metric_registry *registry = NULL;
 pthread_mutex_t registry_lock = PTHREAD_MUTEX_INITIALIZER;
 
-HeadBlock* getMetricFromHashTable(char *key, bool flag) {
+HeadBlock *getMetricFromHashTable(char *key, bool flag)
+{
         metric_registry *tempEntry;
 
         printf("[%s]\n", key);
         HASH_FIND_STR(registry, key, tempEntry);
         // if(tempEntry == NULL)
         //         printf("getMetricFromHashTable:  NULL\n");
-        // else 
+        // else
         //         printf("getMetricFromHashTable:  NOT NULL\n");
 
-        if(tempEntry == NULL && flag == true) {
-                tempEntry = (metric_registry*)malloc(sizeof(metric_registry));
+        if (tempEntry == NULL && flag == true)
+        {
+                tempEntry = (metric_registry *)malloc(sizeof(metric_registry));
                 strncpy(tempEntry->key, key, sizeof(tempEntry->key) - 1);
                 tempEntry->key[sizeof(tempEntry->key) - 1] = '\0';
 
@@ -56,7 +59,7 @@ HeadBlock* getMetricFromHashTable(char *key, bool flag) {
         return tempEntry->head;
 }
 
-bool Head_PUT(char *metricName, long timestamp, double value, char* dataDir)
+bool Head_PUT(char *metricName, long timestamp, double value, char *dataDir)
 {
         // printf("reached Head_STATS, %s\n", metricName);
         pthread_mutex_lock(&registry_lock);
@@ -65,32 +68,33 @@ bool Head_PUT(char *metricName, long timestamp, double value, char* dataDir)
 
         pthread_mutex_lock(&head->lock);
 
-
         if (!head)
         {
                 return false;
         }
 
         bool res = PUT_value(head, timestamp, value);
-    
-        if (!res && head->size >= HEAD_CAPACITY) {
-                pthread_mutex_unlock(&head->lock); 
-                headflush(metricName, dataDir); 
+
+        if (!res && head->size >= HEAD_CAPACITY)
+        {
+                pthread_mutex_unlock(&head->lock);
+                headflush(metricName, dataDir);
                 pthread_mutex_lock(&head->lock);
-                res =  PUT_value(head, timestamp, value);
+                res = PUT_value(head, timestamp, value);
         }
-        
+
         pthread_mutex_unlock(&head->lock);
         return res;
 }
 
-char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* size) {
+char *Head_GET(char *metricName, long startTimestamp, long endTimestamp, int *size)
+{
         pthread_mutex_lock(&registry_lock);
         metric_registry *entry;
         HASH_FIND_STR(registry, metricName, entry);
         pthread_mutex_unlock(&registry_lock);
 
-        if (!entry) 
+        if (!entry)
                 return NULL;
 
         *size = 0;
@@ -99,18 +103,22 @@ char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* si
         result[0] = '\0';
         int current_len = 0;
 
-        for (int i = 0; i < entry->chunkCount; i++) {
+        for (int i = 0; i < entry->chunkCount; i++)
+        {
 
-                if (entry->chunks[i].start_ts <= endTimestamp && entry->chunks[i].end_ts >= startTimestamp) {
+                if (entry->chunks[i].start_ts <= endTimestamp && entry->chunks[i].end_ts >= startTimestamp)
+                {
 
                         int pointsInChunk = 0;
-                        char* diskData = decompressChunk(entry->chunks[i].filename, startTimestamp, endTimestamp, &pointsInChunk);
-                        if (diskData) {
+                        char *diskData = decompressChunk(entry->chunks[i].filename, startTimestamp, endTimestamp, &pointsInChunk);
+                        if (diskData)
+                        {
 
                                 *size += pointsInChunk;
                                 int diskLen = strlen(diskData);
 
-                                if (current_len + diskLen + 1 > capacity) {
+                                if (current_len + diskLen + 1 > capacity)
+                                {
                                         capacity = current_len + diskLen + 2048;
                                         result = realloc(result, capacity);
                                 }
@@ -126,10 +134,12 @@ char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* si
         char *ramData = GET_value(entry->head, startTimestamp, endTimestamp, &ramPoints);
         pthread_mutex_unlock(&entry->head->lock);
 
-        if (ramData) {
+        if (ramData)
+        {
                 *size += ramPoints;
                 int ramLen = strlen(ramData);
-                if (current_len + ramLen + 1 > capacity) {
+                if (current_len + ramLen + 1 > capacity)
+                {
                         capacity = current_len + ramLen + 1;
                         result = realloc(result, capacity);
                 }
@@ -139,25 +149,28 @@ char* Head_GET(char *metricName, long startTimestamp, long endTimestamp, int* si
 
         char summary[64];
         sprintf(summary, "(%d points)\n", *size);
-        
-        if (current_len + strlen(summary) + 1 > capacity) {
+
+        if (current_len + strlen(summary) + 1 > capacity)
+        {
                 result = realloc(result, current_len + strlen(summary) + 1);
         }
-    
+
         strcpy(result + current_len, summary);
 
         return result;
 }
-char* Head_AGG(char *metricName,
+char *Head_AGG(char *metricName,
                long startTimestamp,
                long endTimestamp,
                int bucketSeconds,
                const char *func)
 {
         // validate
-        if (bucketSeconds <= 0 || startTimestamp >= endTimestamp) {
-                char *err = (char*)malloc(64);
-                if (err) snprintf(err, 64, "ERR invalid range or bucket\n");
+        if (bucketSeconds <= 0 || startTimestamp >= endTimestamp)
+        {
+                char *err = (char *)malloc(64);
+                if (err)
+                        snprintf(err, 64, "ERR invalid range or bucket\n");
                 return err;
         }
 
@@ -166,10 +179,12 @@ char* Head_AGG(char *metricName,
         HASH_FIND_STR(registry, metricName, entry);
         pthread_mutex_unlock(&registry_lock);
 
-        if (!entry) {
+        if (!entry)
+        {
                 // no metric -> empty result
-                char *out = (char*)malloc(32);
-                if (out) snprintf(out, 32, "(0 buckets)\n");
+                char *out = (char *)malloc(32);
+                if (out)
+                        snprintf(out, 32, "(0 buckets)\n");
                 return out;
         }
 
@@ -177,16 +192,20 @@ char* Head_AGG(char *metricName,
         int n = 0, cap = 0;
 
         // 1) disk chunks
-        for (int i = 0; i < entry->chunkCount; i++) {
+        for (int i = 0; i < entry->chunkCount; i++)
+        {
                 // overlap check: chunk overlaps [start,end)
                 if (entry->chunks[i].start_ts < endTimestamp &&
-                    entry->chunks[i].end_ts >= startTimestamp) {
+                    entry->chunks[i].end_ts >= startTimestamp)
+                {
                         if (collect_points_from_chunk(entry->chunks[i].filename,
                                                       startTimestamp, endTimestamp,
-                                                      &pts, &n, &cap) != 0) {
+                                                      &pts, &n, &cap) != 0)
+                        {
                                 free(pts);
-                                char *err = (char*)malloc(64);
-                                if (err) snprintf(err, 64, "ERR disk read\n");
+                                char *err = (char *)malloc(64);
+                                if (err)
+                                        snprintf(err, 64, "ERR disk read\n");
                                 return err;
                         }
                 }
@@ -196,20 +215,24 @@ char* Head_AGG(char *metricName,
         pthread_mutex_lock(&entry->head->lock);
         if (collect_points_from_head(entry->head,
                                      startTimestamp, endTimestamp,
-                                     &pts, &n, &cap) != 0) {
+                                     &pts, &n, &cap) != 0)
+        {
                 pthread_mutex_unlock(&entry->head->lock);
                 free(pts);
-                char *err = (char*)malloc(64);
-                if (err) snprintf(err, 64, "ERR no memory\n");
+                char *err = (char *)malloc(64);
+                if (err)
+                        snprintf(err, 64, "ERR no memory\n");
                 return err;
         }
         pthread_mutex_unlock(&entry->head->lock);
 
-        if (n == 0) {
-            char *out = (char*)malloc(32);
-            if (out) snprintf(out, 32, "(0 buckets)\n");
-            free(pts);
-            return out;
+        if (n == 0)
+        {
+                char *out = (char *)malloc(32);
+                if (out)
+                        snprintf(out, 32, "(0 buckets)\n");
+                free(pts);
+                return out;
         }
 
         // sort by timestamp
@@ -220,18 +243,19 @@ char* Head_AGG(char *metricName,
         free(pts);
         return out;
 }
-char* decompressChunk(const char* filepath, long start, long end, int* chunkPoints) {
+char *decompressChunk(const char *filepath, long start, long end, int *chunkPoints)
+{
         struct chunkheader header;
         uint8_t *payload = NULL;
         *chunkPoints = 0;
         int count = 0;
 
-        if (chunkread(filepath, &header, &payload) != 0) 
+        if (chunkread(filepath, &header, &payload) != 0)
                 return NULL;
 
-        struct bytebuffer buf = { .data = payload, .size = header.sizebytes };
+        struct bytebuffer buf = {.data = payload, .size = header.sizebytes};
         struct bitreader *br = brcreate(&buf);
-        
+
         struct timestampdecoder tsdec;
         struct valuedecoder valdec;
         tsdecoderinit(&tsdec, br);
@@ -242,16 +266,19 @@ char* decompressChunk(const char* filepath, long start, long end, int* chunkPoin
         chunkResult[0] = '\0';
         int current_len = 0;
 
-        for (uint32_t i = 0; i < header.point_count; i++) {
+        for (uint32_t i = 0; i < header.point_count; i++)
+        {
                 long ts = (long)tsdecoderread(&tsdec);
                 double val = valdecoderread(&valdec);
 
-                if (ts >= start && ts < end) {
+                if (ts >= start && ts < end)
+                {
                         count++;
                         char temp[128];
                         int n = snprintf(temp, sizeof(temp), "%ld\t%.2f\n", ts, val);
-                        
-                        if (current_len + n + 1 > capacity) {
+
+                        if (current_len + n + 1 > capacity)
+                        {
                                 capacity *= 2;
                                 chunkResult = realloc(chunkResult, capacity);
                         }
@@ -261,18 +288,20 @@ char* decompressChunk(const char* filepath, long start, long end, int* chunkPoin
         }
         *chunkPoints = count;
         free(payload);
-        free(br); 
+        free(br);
         return chunkResult;
 }
 
-void print_metric(char *metric) {
+void print_metric(char *metric)
+{
         metric_registry *entry;
 
         pthread_mutex_lock(&registry_lock);
         HASH_FIND_STR(registry, metric, entry);
         pthread_mutex_unlock(&registry_lock);
 
-        if (!entry) {
+        if (!entry)
+        {
                 printf("Metric not found\n");
                 return;
         }
@@ -280,115 +309,169 @@ void print_metric(char *metric) {
         HeadBlock *hb = entry->head;
         pthread_mutex_lock(&hb->lock);
         printf("Metric: %s\n", metric);
-        for (int i = 0; i < hb->size; i++) {
+        for (int i = 0; i < hb->size; i++)
+        {
                 printf("  %ld -> %.2f\n", hb->timestamps[i], hb->values[i]);
         }
         pthread_mutex_unlock(&hb->lock);
 }
 
-void cleanupRegistry(char *dataDir) {
+void cleanupRegistry(char *dataDir)
+{
         metric_registry *entry, *tmp;
 
-        HASH_ITER(hh, registry, entry, tmp) {  
-                
-                if (entry->head && entry->head->size > 0) {
+        HASH_ITER(hh, registry, entry, tmp)
+        {
+
+                if (entry->head && entry->head->size > 0)
+                {
                         printf("Persisting %d points for[] %s]...\n", entry->head->size, entry->key);
-                        headflush(entry->key, dataDir); 
+                        headflush(entry->key, dataDir);
                 }
 
-                if (entry->head) {
+                if (entry->head)
+                {
 
-                        if (entry->head->timestamps) free(entry->head->timestamps);
-                        if (entry->head->values) free(entry->head->values);
-                        
+                        if (entry->head->timestamps)
+                                free(entry->head->timestamps);
+                        if (entry->head->values)
+                                free(entry->head->values);
+
                         pthread_mutex_destroy(&entry->head->lock);
                         free(entry->head);
                 }
 
-                if (entry->chunks) {
+                if (entry->chunks)
+                {
                         free(entry->chunks);
                 }
 
-                HASH_DEL(registry, entry); 
+                HASH_DEL(registry, entry);
 
                 free(entry);
         }
         registry = NULL;
 }
 
-char* Head_STATS(char *metricName) 
+char *Head_STATS(char *metricName)
 {
         pthread_mutex_lock(&registry_lock);
-        HeadBlock *head = getMetricFromHashTable(metricName, false);
+        metric_registry *entry;
+        HASH_FIND_STR(registry, metricName, entry);
         pthread_mutex_unlock(&registry_lock);
 
-        pthread_mutex_lock(&head->lock);
-        char *p = STATS_value(head, metricName);
-        pthread_mutex_unlock(&head->lock);
+        if (!entry)
+        {
+                char *result = malloc(64);
+                snprintf(result, 64, "Metric not found: %s\n", metricName);
+                return result;
+        }
 
-        return p;        
+        char *stats = malloc(512);
+        if (!stats)
+                return NULL;
+
+        // head details
+        pthread_mutex_lock(&entry->head->lock);
+        int in_memory = entry->head->size;
+        long first_ram_ts = (in_memory > 0) ? entry->head->timestamps[0] : -1;
+        long last_ram_ts = (in_memory > 0) ? entry->head->lastTimestamp : -1;
+        pthread_mutex_unlock(&entry->head->lock);
+
+        //  chunk details
+        int disk_chunks = entry->chunkCount;
+        long first_disk_ts = (disk_chunks > 0) ? entry->chunks[0].start_ts : -1;
+        long last_disk_ts = (disk_chunks > 0) ? entry->chunks[disk_chunks - 1].end_ts : -1;
+
+        long overall_first = (first_disk_ts != -1) ? first_disk_ts : first_ram_ts;
+        long overall_last = (last_ram_ts != -1) ? last_ram_ts : last_disk_ts;
+
+        int offset = 0;
+        offset += snprintf(stats + offset, 512 - offset, "metric: %s\n", metricName);
+        offset += snprintf(stats + offset, 512 - offset, "in memory: %d\n", in_memory);
+        offset += snprintf(stats + offset, 512 - offset, "disk chunks: %d\n", disk_chunks);
+
+        if (overall_first != -1)
+        {
+                offset += snprintf(stats + offset, 512 - offset, "first timestamp: %ld\n", overall_first);
+        }
+        else
+        {
+                offset += snprintf(stats + offset, 512 - offset, "first timestamp: N/A\n");
+        }
+
+        if (overall_last != -1)
+        {
+                offset += snprintf(stats + offset, 512 - offset, "last timestamp: %ld\n", overall_last);
+        }
+        else
+        {
+                offset += snprintf(stats + offset, 512 - offset, "last timestamp: N/A\n");
+        }
+
+        return stats;
 }
 
-bool headflush(char *metricname, char *dataDir) {
+bool headflush(char *metricname, char *dataDir)
+{
 
         pthread_mutex_lock(&registry_lock);
 
         HeadBlock *head =
-                getMetricFromHashTable(
+            getMetricFromHashTable(
                 metricname,
-                false
-                );
+                false);
 
         pthread_mutex_unlock(&registry_lock);
 
-        if (!head) {
+        if (!head)
+        {
                 return false;
         }
 
         pthread_mutex_lock(&head->lock);
 
-        if (head->size == 0) {
+        if (head->size == 0)
+        {
 
                 pthread_mutex_unlock(&head->lock);
 
                 return true;
         }
 
-
         char metricDir[256];
         snprintf(metricDir, sizeof(metricDir), "%s/%s", dataDir, metricname);
         mkdir(metricDir, 0777);
 
-
         uint32_t chunkid =
-                (uint32_t)head->timestamps[0];
+            (uint32_t)head->timestamps[0];
 
         char filepath[256];
 
         snprintf(
-                filepath,
-                sizeof(filepath),
-                "%s/%s_%u.chunk",
-                metricDir,
-                metricname,
-                chunkid
-        );
+            filepath,
+            sizeof(filepath),
+            "%s/%s_%u.chunk",
+            metricDir,
+            metricname,
+            chunkid);
 
         int res =
-                flushtochunk(
+            flushtochunk(
                 chunkid,
                 filepath,
                 (uint64_t *)head->timestamps,
                 head->values,
-                head->size
-                );
+                head->size);
 
-        if (res == 0) {
+        if (res == 0)
+        {
 
                 metric_registry *entry;
                 HASH_FIND_STR(registry, metricname, entry);
 
-                if (entry->chunkCount >= entry->chunkCapacity) {
+                if (entry->chunkCount >= entry->chunkCapacity)
+                {
                         entry->chunkCapacity *= 2;
                         entry->chunks = realloc(entry->chunks, sizeof(ChunkMetadata) * entry->chunkCapacity);
                 }
@@ -397,12 +480,12 @@ bool headflush(char *metricname, char *dataDir) {
                 entry->chunks[entry->chunkCount].end_ts = head->lastTimestamp;
                 strcpy(entry->chunks[entry->chunkCount].filename, filepath);
                 entry->chunkCount++;
-                        head->size = 0;
-                        // just made the last timestamp zero 
-                        // so that the new timestamps are also accepted 
-                        // by the engine
-                        head->lastTimestamp = 0;
-                }
+                head->size = 0;
+                // just made the last timestamp zero
+                // so that the new timestamps are also accepted
+                // by the engine
+                head->lastTimestamp = 0;
+        }
 
         pthread_mutex_unlock(&head->lock);
 
@@ -410,14 +493,19 @@ bool headflush(char *metricname, char *dataDir) {
 }
 static int append_point(Point **arr, int *n, int *cap, long ts, double val)
 {
-        if (*cap == 0) {
+        if (*cap == 0)
+        {
                 *cap = 1024;
-                *arr = (Point*)malloc(sizeof(Point) * (*cap));
-                if (!*arr) return -1;
-        } else if (*n >= *cap) {
+                *arr = (Point *)malloc(sizeof(Point) * (*cap));
+                if (!*arr)
+                        return -1;
+        }
+        else if (*n >= *cap)
+        {
                 *cap *= 2;
-                Point *tmp = (Point*)realloc(*arr, sizeof(Point) * (*cap));
-                if (!tmp) return -1;
+                Point *tmp = (Point *)realloc(*arr, sizeof(Point) * (*cap));
+                if (!tmp)
+                        return -1;
                 *arr = tmp;
         }
 
@@ -432,11 +520,12 @@ static int collect_points_from_chunk(const char *filepath, long start, long end,
         struct chunkheader header;
         uint8_t *payload = NULL;
 
-        if (chunkread(filepath, &header, &payload) != 0) {
+        if (chunkread(filepath, &header, &payload) != 0)
+        {
                 return -1;
         }
 
-        struct bytebuffer buf = { .data = payload, .size = header.sizebytes };
+        struct bytebuffer buf = {.data = payload, .size = header.sizebytes};
         struct bitreader *br = brcreate(&buf);
 
         struct timestampdecoder tsdec;
@@ -444,13 +533,16 @@ static int collect_points_from_chunk(const char *filepath, long start, long end,
         tsdecoderinit(&tsdec, br);
         valdecoderinit(&valdec, br);
 
-        for (uint32_t i = 0; i < header.point_count; i++) {
+        for (uint32_t i = 0; i < header.point_count; i++)
+        {
                 long ts = (long)tsdecoderread(&tsdec);
                 double val = valdecoderread(&valdec);
 
                 // IMPORTANT: doc requires [start, end)
-                if (ts >= start && ts < end) {
-                        if (append_point(arr, n, cap, ts, val) != 0) {
+                if (ts >= start && ts < end)
+                {
+                        if (append_point(arr, n, cap, ts, val) != 0)
+                        {
                                 free(payload);
                                 brfree(br);
                                 return -1;
@@ -466,10 +558,13 @@ static int collect_points_from_head(HeadBlock *head, long start, long end,
                                     Point **arr, int *n, int *cap)
 {
         // caller should lock head->lock; we’ll do it in Head_AGG
-        for (int i = 0; i < head->size; i++) {
+        for (int i = 0; i < head->size; i++)
+        {
                 long ts = head->timestamps[i];
-                if (ts >= start && ts < end) {
-                        if (append_point(arr, n, cap, ts, head->values[i]) != 0) {
+                if (ts >= start && ts < end)
+                {
+                        if (append_point(arr, n, cap, ts, head->values[i]) != 0)
+                        {
                                 return -1;
                         }
                 }
@@ -478,28 +573,32 @@ static int collect_points_from_head(HeadBlock *head, long start, long end,
 }
 static int cmp_point_ts(const void *a, const void *b)
 {
-        const Point *pa = (const Point*)a;
-        const Point *pb = (const Point*)b;
-        if (pa->ts < pb->ts) return -1;
-        if (pa->ts > pb->ts) return 1;
+        const Point *pa = (const Point *)a;
+        const Point *pb = (const Point *)b;
+        if (pa->ts < pb->ts)
+                return -1;
+        if (pa->ts > pb->ts)
+                return 1;
         return 0;
 }
-static char* agg_points(Point *pts, int n,
+static char *agg_points(Point *pts, int n,
                         long start, long end,
                         int bucketSeconds,
                         const char *func)
 {
         // allocate output buffer
         int out_cap = 2048;
-        char *out = (char*)malloc(out_cap);
-        if (!out) return NULL;
+        char *out = (char *)malloc(out_cap);
+        if (!out)
+                return NULL;
         out[0] = '\0';
         int out_len = 0;
 
         int buckets = 0;
 
         // iterate buckets in [start, end) stepping by bucketSeconds
-        for (long bstart = start; bstart < end; bstart += bucketSeconds) {
+        for (long bstart = start; bstart < end; bstart += bucketSeconds)
+        {
                 long bend = bstart + bucketSeconds;
 
                 // aggregate points with ts in [bstart, bend)
@@ -507,17 +606,25 @@ static char* agg_points(Point *pts, int n,
                 double sum = 0.0;
                 double minv = 0.0, maxv = 0.0;
 
-                for (int i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++)
+                {
                         long ts = pts[i].ts;
-                        if (ts < bstart) continue;
-                        if (ts >= bend) break; // because sorted
+                        if (ts < bstart)
+                                continue;
+                        if (ts >= bend)
+                                break; // because sorted
                         double v = pts[i].val;
 
-                        if (count == 0) {
+                        if (count == 0)
+                        {
                                 minv = maxv = v;
-                        } else {
-                                if (v < minv) minv = v;
-                                if (v > maxv) maxv = v;
+                        }
+                        else
+                        {
+                                if (v < minv)
+                                        minv = v;
+                                if (v > maxv)
+                                        maxv = v;
                         }
                         sum += v;
                         count++;
@@ -525,41 +632,59 @@ static char* agg_points(Point *pts, int n,
 
                 // Per spec, you typically output buckets that have points.
                 // (Doc example shows only buckets with data.)
-                if (count == 0) continue;
+                if (count == 0)
+                        continue;
 
                 double result = 0.0;
-                if (strcmp(func, "avg") == 0) {
+                if (strcmp(func, "avg") == 0)
+                {
                         result = sum / (double)count;
-                } else if (strcmp(func, "min") == 0) {
+                }
+                else if (strcmp(func, "min") == 0)
+                {
                         result = minv;
-                } else if (strcmp(func, "max") == 0) {
+                }
+                else if (strcmp(func, "max") == 0)
+                {
                         result = maxv;
-                } else if (strcmp(func, "sum") == 0) {
+                }
+                else if (strcmp(func, "sum") == 0)
+                {
                         result = sum;
-                } else if (strcmp(func, "count") == 0) {
+                }
+                else if (strcmp(func, "count") == 0)
+                {
                         result = (double)count;
-                } else {
+                }
+                else
+                {
                         // unknown func
                         free(out);
-                        char *err = (char*)malloc(64);
-                        if (err) snprintf(err, 64, "ERR invalid func\n");
+                        char *err = (char *)malloc(64);
+                        if (err)
+                                snprintf(err, 64, "ERR invalid func\n");
                         return err;
                 }
 
                 char line[128];
                 // doc shows: start-end value
                 // keep formatting simple; for count we print as integer-ish but using %.2f is ok too
-                if (strcmp(func, "count") == 0) {
+                if (strcmp(func, "count") == 0)
+                {
                         snprintf(line, sizeof(line), "%ld-%ld %d\n", bstart, bend, count);
-                } else {
+                }
+                else
+                {
                         snprintf(line, sizeof(line), "%ld-%ld %.6f\n", bstart, bend, result);
                 }
 
                 int need = (int)strlen(line);
-                if (out_len + need + 64 > out_cap) {
+                if (out_len + need + 64 > out_cap)
+                {
                         out_cap = (out_len + need + 64) * 2;
-                        char *tmp = (char*)realloc(out, out_cap);
-                        if (!tmp) {
+                        char *tmp = (char *)realloc(out, out_cap);
+                        if (!tmp)
+                        {
                                 free(out);
                                 return NULL;
                         }
@@ -577,10 +702,12 @@ static char* agg_points(Point *pts, int n,
         snprintf(footer, sizeof(footer), "(%d buckets)\n", buckets);
 
         int need = (int)strlen(footer);
-        if (out_len + need + 1 > out_cap) {
+        if (out_len + need + 1 > out_cap)
+        {
                 out_cap = out_len + need + 1;
-                char *tmp = (char*)realloc(out, out_cap);
-                if (!tmp) {
+                char *tmp = (char *)realloc(out, out_cap);
+                if (!tmp)
+                {
                         free(out);
                         return NULL;
                 }

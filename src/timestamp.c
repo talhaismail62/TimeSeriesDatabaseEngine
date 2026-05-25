@@ -1,15 +1,18 @@
 #include "timestamp.h"
 
-static int64_t signextend(uint64_t val, int bits) {
+static int64_t signextend(uint64_t val, int bits)
+{
 
-    if (val & (1ULL << (bits - 1))) {
+    if (val & (1ULL << (bits - 1)))
+    {
         return val | (~0ULL << bits);
     }
 
     return val;
 }
 
-void tsencoderinit(struct timestampencoder *encoder, struct bitwriter *bw) {
+void tsencoderinit(struct timestampencoder *encoder, struct bitwriter *bw)
+{
 
     encoder->bw = bw;
 
@@ -20,9 +23,11 @@ void tsencoderinit(struct timestampencoder *encoder, struct bitwriter *bw) {
     encoder->issecond = 0;
 }
 
-void tsencoderwrite(struct timestampencoder *encoder, uint64_t timestamp) {
+void tsencoderwrite(struct timestampencoder *encoder, uint64_t timestamp)
+{
 
-    if (encoder->isfirst) {
+    if (encoder->isfirst)
+    {
 
         bwwrite(encoder->bw, timestamp, 64);
 
@@ -36,7 +41,8 @@ void tsencoderwrite(struct timestampencoder *encoder, uint64_t timestamp) {
 
     int64_t delta = timestamp - encoder->prevtimestamp;
 
-    if (encoder->issecond) {
+    if (encoder->issecond)
+    {
 
         bwwrite(encoder->bw, delta & 0x3FFF, 14);
 
@@ -49,41 +55,36 @@ void tsencoderwrite(struct timestampencoder *encoder, uint64_t timestamp) {
     }
 
     int64_t D = delta - encoder->prevdelta;
-
-    if (D == 0) {
-
+    if (D == 0)
+    {
         bwwrite(encoder->bw, 0, 1);
-
-    } else if (D >= -63 && D <= 64) {
-
+    }
+    else if (D >= -64 && D <= 63)
+    {
         bwwrite(encoder->bw, 0x02, 2);
-
         bwwrite(encoder->bw, D & 0x7F, 7);
-
-    } else if (D >= -255 && D <= 256) {
-
+    }
+    else if (D >= -256 && D <= 255)
+    {
         bwwrite(encoder->bw, 0x06, 3);
-
         bwwrite(encoder->bw, D & 0x1FF, 9);
-
-    } else if (D >= -2047 && D <= 2048) {
-
+    }
+    else if (D >= -2048 && D <= 2047)
+    {
         bwwrite(encoder->bw, 0x0E, 4);
-
         bwwrite(encoder->bw, D & 0xFFF, 12);
-
-    } else {
-
+    }
+    else
+    {
         bwwrite(encoder->bw, 0x0F, 4);
-
         bwwrite(encoder->bw, D & 0xFFFFFFFF, 32);
     }
-
     encoder->prevtimestamp = timestamp;
     encoder->prevdelta = delta;
 }
 
-void tsdecoderinit(struct timestampdecoder *decoder, struct bitreader *br) {
+void tsdecoderinit(struct timestampdecoder *decoder, struct bitreader *br)
+{
 
     decoder->br = br;
 
@@ -94,9 +95,11 @@ void tsdecoderinit(struct timestampdecoder *decoder, struct bitreader *br) {
     decoder->issecond = 0;
 }
 
-uint64_t tsdecoderread(struct timestampdecoder *decoder) {
+uint64_t tsdecoderread(struct timestampdecoder *decoder)
+{
 
-    if (decoder->isfirst) {
+    if (decoder->isfirst)
+    {
 
         uint64_t timestamp = brread(decoder->br, 64);
 
@@ -108,7 +111,8 @@ uint64_t tsdecoderread(struct timestampdecoder *decoder) {
         return timestamp;
     }
 
-    if (decoder->issecond) {
+    if (decoder->issecond)
+    {
 
         int64_t delta = signextend(brread(decoder->br, 14), 14);
 
@@ -124,7 +128,8 @@ uint64_t tsdecoderread(struct timestampdecoder *decoder) {
 
     int bit0 = brread(decoder->br, 1);
 
-    if (bit0 == 0) {
+    if (bit0 == 0)
+    {
 
         uint64_t timestamp =
             decoder->prevtimestamp + decoder->prevdelta;
@@ -138,27 +143,33 @@ uint64_t tsdecoderread(struct timestampdecoder *decoder) {
 
     int64_t D = 0;
 
-    if (bit1 == 0) {
+    if (bit1 == 0)
+    {
 
         D = signextend(brread(decoder->br, 7), 7);
-
-    } else {
+    }
+    else
+    {
 
         int bit2 = brread(decoder->br, 1);
 
-        if (bit2 == 0) {
+        if (bit2 == 0)
+        {
 
             D = signextend(brread(decoder->br, 9), 9);
-
-        } else {
+        }
+        else
+        {
 
             int bit3 = brread(decoder->br, 1);
 
-            if (bit3 == 0) {
+            if (bit3 == 0)
+            {
 
                 D = signextend(brread(decoder->br, 12), 12);
-
-            } else {
+            }
+            else
+            {
 
                 D = signextend(brread(decoder->br, 32), 32);
             }

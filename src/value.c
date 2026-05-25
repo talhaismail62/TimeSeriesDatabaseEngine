@@ -2,7 +2,8 @@
 
 #include <string.h>
 
-static uint64_t doubletobits(double d) {
+static uint64_t doubletobits(double d)
+{
 
     uint64_t bits;
 
@@ -11,7 +12,8 @@ static uint64_t doubletobits(double d) {
     return bits;
 }
 
-static double bitstodouble(uint64_t bits) {
+static double bitstodouble(uint64_t bits)
+{
 
     double d;
 
@@ -22,8 +24,8 @@ static double bitstodouble(uint64_t bits) {
 
 void valencoderinit(
     struct valueencoder *encoder,
-    struct bitwriter *bw
-) {
+    struct bitwriter *bw)
+{
 
     encoder->bw = bw;
 
@@ -37,12 +39,15 @@ void valencoderinit(
 
 void valencoderwrite(
     struct valueencoder *encoder,
-    double value
-) {
-
+    double value)
+{
     uint64_t valbits = doubletobits(value);
+    
+    valbits &= 0xFFFFFFFFFFFFFFF0ULL;
+    
 
-    if (encoder->isfirst) {
+    if (encoder->isfirst)
+    {
 
         bwwrite(encoder->bw, valbits, 64);
 
@@ -56,24 +61,27 @@ void valencoderwrite(
     uint64_t xorval =
         valbits ^ encoder->prevvaluebits;
 
-    if (xorval == 0) {
+    if (xorval == 0)
+    {
 
         bwwrite(encoder->bw, 0, 1);
-
-    } else {
+    }
+    else
+    {
 
         int leading = __builtin_clzll(xorval);
 
         int trailing = __builtin_ctzll(xorval);
 
-        if (leading > 31) {
+        if (leading > 31)
+        {
             leading = 31;
         }
 
         if (
             leading >= encoder->prevleading &&
-            trailing >= encoder->prevtrailing
-        ) {
+            trailing >= encoder->prevtrailing)
+        {
 
             bwwrite(encoder->bw, 0x02, 2);
 
@@ -88,10 +96,10 @@ void valencoderwrite(
             bwwrite(
                 encoder->bw,
                 meaningfulbits,
-                nmeaningful
-            );
-
-        } else {
+                nmeaningful);
+        }
+        else
+        {
 
             bwwrite(encoder->bw, 0x03, 2);
 
@@ -101,14 +109,12 @@ void valencoderwrite(
             bwwrite(
                 encoder->bw,
                 leading,
-                5
-            );
+                5);
 
             bwwrite(
                 encoder->bw,
                 nmeaningful & 0x3F,
-                6
-            );
+                6);
 
             uint64_t meaningfulbits =
                 xorval >> trailing;
@@ -116,8 +122,7 @@ void valencoderwrite(
             bwwrite(
                 encoder->bw,
                 meaningfulbits,
-                nmeaningful
-            );
+                nmeaningful);
 
             encoder->prevleading = leading;
             encoder->prevtrailing = trailing;
@@ -129,8 +134,8 @@ void valencoderwrite(
 
 void valdecoderinit(
     struct valuedecoder *decoder,
-    struct bitreader *br
-) {
+    struct bitreader *br)
+{
 
     decoder->br = br;
 
@@ -142,12 +147,16 @@ void valdecoderinit(
     decoder->isfirst = 1;
 }
 
-double valdecoderread(struct valuedecoder *decoder) {
+double valdecoderread(struct valuedecoder *decoder)
+{
 
-    if (decoder->isfirst) {
+    if (decoder->isfirst)
+    {
 
         uint64_t valbits =
             brread(decoder->br, 64);
+
+        valbits &= 0xFFFFFFFFFFFFFFF0ULL;
 
         decoder->prevvaluebits = valbits;
 
@@ -160,15 +169,18 @@ double valdecoderread(struct valuedecoder *decoder) {
 
     int bit0 = brread(decoder->br, 1);
 
-    if (bit0 == 0) {
+    if (bit0 == 0)
+    {
 
         xorval = 0;
-
-    } else {
+    }
+    else
+    {
 
         int bit1 = brread(decoder->br, 1);
 
-        if (bit1 == 0) {
+        if (bit1 == 0)
+        {
 
             int nmeaningful =
                 64 -
@@ -178,14 +190,13 @@ double valdecoderread(struct valuedecoder *decoder) {
             uint64_t meaningfulbits =
                 brread(
                     decoder->br,
-                    nmeaningful
-                );
+                    nmeaningful);
 
             xorval =
-                meaningfulbits <<
-                decoder->prevtrailing;
-
-        } else {
+                meaningfulbits << decoder->prevtrailing;
+        }
+        else
+        {
 
             int leading =
                 brread(decoder->br, 5);
@@ -193,7 +204,8 @@ double valdecoderread(struct valuedecoder *decoder) {
             int nmeaningful =
                 brread(decoder->br, 6);
 
-            if (nmeaningful == 0) {
+            if (nmeaningful == 0)
+            {
                 nmeaningful = 64;
             }
 
@@ -203,8 +215,7 @@ double valdecoderread(struct valuedecoder *decoder) {
             uint64_t meaningfulbits =
                 brread(
                     decoder->br,
-                    nmeaningful
-                );
+                    nmeaningful);
 
             xorval =
                 meaningfulbits << trailing;
