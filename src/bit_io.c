@@ -43,7 +43,9 @@ void bwwrite(struct bitwriter *bw, uint64_t value, int n_bits) {
         int take = (n_bits < free_in_byte) ? n_bits : free_in_byte;
         int shift = n_bits - take;
 
-        uint64_t chunk = (value >> shift) & ((1ULL << take) - 1);
+        // adding safe mask extraction
+        uint64_t mask = (take == 64) ? ~0ULL : ((1ULL << take) - 1);
+        uint64_t chunk = (value >> shift) & mask;
 
         bw->current_byte |= chunk << (free_in_byte - take);
 
@@ -101,9 +103,9 @@ uint64_t brread(struct bitreader *br, int n_bits) {
 
         uint8_t current = br->buffer->data[br->byteoffset];
 
-        uint8_t chunk =
-            (current >> (available_in_byte - take)) &
-            ((1 << take) - 1);
+        // adding here too
+        uint8_t mask = (take == 8) ? 0xFF : ((1 << take) - 1);
+        uint8_t chunk = (current >> (available_in_byte - take)) & mask;
 
         result = (result << take) | chunk;
 
