@@ -5,8 +5,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "../src/wal.h"
-#include "../src/head.h"
+#include "../include/wal.h"
+#include "../include/head.h"
 
 #define DATA_DIR "/tmp/test_wal_data"
 #define METRIC   "test.metric"

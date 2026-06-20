@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "../src/timestamp.h"
+#include "../include/timestamp.h"
 
-int main() {
+int main()
+{
 
     printf(
-        "Starting timestamp test\n"
-    );
+        "Starting timestamp test\n");
 
     int num_points = 1000;
 
@@ -18,11 +18,13 @@ int main() {
 
     timestamps[0] = start_ts;
 
-    for (int i = 1; i < num_points; i++) {
+    for (int i = 1; i < num_points; i++)
+    {
 
         timestamps[i] = timestamps[i - 1] + 10;
 
-        if (i % 100 == 0) {
+        if (i % 100 == 0)
+        {
             timestamps[i] += 2;
         }
     }
@@ -33,7 +35,8 @@ int main() {
 
     tsencoderinit(&encoder, bw);
 
-    for (int i = 0; i < num_points; i++) {
+    for (int i = 0; i < num_points; i++)
+    {
 
         tsencoderwrite(&encoder, timestamps[i]);
     }
@@ -48,27 +51,27 @@ int main() {
 
     tsdecoderinit(&decoder, br);
 
-    for (int i = 0; i < num_points; i++) {
+    for (int i = 0; i < num_points; i++)
+    {
 
         uint64_t decoded_ts =
             tsdecoderread(&decoder);
 
-        if (decoded_ts != timestamps[i]) {
+        if (decoded_ts != timestamps[i])
+        {
 
             printf(
                 "Failed\n",
                 i,
                 (unsigned long long)timestamps[i],
-                (unsigned long long)decoded_ts
-            );
+                (unsigned long long)decoded_ts);
 
             return 1;
         }
     }
 
     printf(
-        "Success\n"
-    );
+        "Success\n");
 
     brfree(br);
 

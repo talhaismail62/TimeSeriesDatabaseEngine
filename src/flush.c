@@ -1,9 +1,9 @@
-#include "flush.h"
+#include "include/flush.h"
 
-#include "bit_io.h"
-#include "timestamp.h"
-#include "value.h"
-#include "chunk.h"
+#include "include/bit_io.h"
+#include "include/timestamp.h"
+#include "include/value.h"
+#include "include/chunk.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,10 +13,11 @@ int flushtochunk(
     const char *filepath,
     uint64_t *timestamps,
     double *values,
-    int numpoints
-) {
+    int numpoints)
+{
 
-    if (numpoints == 0) {
+    if (numpoints == 0)
+    {
         return 0;
     }
 
@@ -30,17 +31,16 @@ int flushtochunk(
 
     valencoderinit(&valenc, bw);
 
-    for (int i = 0; i < numpoints; i++) {
+    for (int i = 0; i < numpoints; i++)
+    {
 
         tsencoderwrite(
             &tsenc,
-            timestamps[i]
-        );
+            timestamps[i]);
 
         valencoderwrite(
             &valenc,
-            values[i]
-        );
+            values[i]);
     }
 
     bwclose(bw);
@@ -62,25 +62,24 @@ int flushtochunk(
         chunkwrite(
             filepath,
             &header,
-            bw->buffer->data
-        );
+            bw->buffer->data);
 
-    if (result == 0) {
+    if (result == 0)
+    {
 
         printf(
             "Successfully flushed chunk %u to %s (Compressed %d points into %u bytes)\n",
             chunkid,
             filepath,
             numpoints,
-            header.sizebytes
-        );
-
-    } else {
+            header.sizebytes);
+    }
+    else
+    {
 
         printf(
             "Failed to flush chunk\n",
-            chunkid
-        );
+            chunkid);
     }
 
     bwfree(bw);

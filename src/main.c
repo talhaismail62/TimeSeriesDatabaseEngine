@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "server.h"
-#include "registry.h"
+#include "include/server.h"
+#include "include/registry.h"
 
 int main(int argc, char *argv[])
 {

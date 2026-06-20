@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#include "../src/bit_io.h"
+#include "../include/bit_io.h"
 
 uint64_t rand64() {
 

@@ -1,5 +1,5 @@
-#include "retention.h"
-#include "registry.h"
+#include "include/retention.h"
+#include "include/registry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,14 +33,15 @@ int retention_add_rule(RetentionConfig *cfg, const char *spec)
     RetentionRule *r = &cfg->rules[cfg->count];
     memcpy(r->metric, spec, name_len);
     r->metric[name_len] = '\0';
-    r->max_age_seconds  = secs;
+    r->max_age_seconds = secs;
     cfg->count++;
     return 0;
 }
 
 long retention_get(const RetentionConfig *cfg, const char *metric)
 {
-    for (int i = 0; i < cfg->count; i++) {
+    for (int i = 0; i < cfg->count; i++)
+    {
         if (strcmp(cfg->rules[i].metric, metric) == 0)
             return cfg->rules[i].max_age_seconds;
     }
@@ -52,9 +53,9 @@ long retention_get(const RetentionConfig *cfg, const char *metric)
 /* ------------------------------------------------------------------ */
 
 static RetentionConfig g_cfg;
-static char            g_dataDir[512];
-static pthread_t       g_thread;
-static volatile int    g_stop = 0;
+static char g_dataDir[512];
+static pthread_t g_thread;
+static volatile int g_stop = 0;
 
 /* Remove a chunk file from disk and from the registry's chunk list.
    Must be called with registry_lock held. */
@@ -82,7 +83,8 @@ static void run_expiry(void)
     pthread_mutex_lock(&registry_lock);
 
     metric_registry *entry, *tmp;
-    HASH_ITER(hh, registry, entry, tmp) {
+    HASH_ITER(hh, registry, entry, tmp)
+    {
         long max_age = retention_get(&g_cfg, entry->key);
         if (max_age <= 0)
             continue; /* no rule for this metric */
@@ -90,7 +92,8 @@ static void run_expiry(void)
         long cutoff = now - max_age;
 
         /* Walk backwards so index shifts from expire_chunk don't skip entries. */
-        for (int i = entry->chunkCount - 1; i >= 0; i--) {
+        for (int i = entry->chunkCount - 1; i >= 0; i--)
+        {
             if (entry->chunks[i].end_ts < cutoff)
                 expire_chunk(entry, i);
         }
@@ -102,7 +105,8 @@ static void run_expiry(void)
 static void *retention_thread(void *arg)
 {
     (void)arg;
-    while (!g_stop) {
+    while (!g_stop)
+    {
         /* Sleep in 1-second increments so we can respond to g_stop quickly. */
         for (int i = 0; i < 60 && !g_stop; i++)
             sleep(1);
@@ -117,7 +121,7 @@ void retention_start(const RetentionConfig *cfg, const char *dataDir)
     if (cfg->count == 0)
         return; /* nothing to enforce */
 
-    g_cfg  = *cfg;
+    g_cfg = *cfg;
     strncpy(g_dataDir, dataDir, sizeof(g_dataDir) - 1);
     g_dataDir[sizeof(g_dataDir) - 1] = '\0';
     g_stop = 0;

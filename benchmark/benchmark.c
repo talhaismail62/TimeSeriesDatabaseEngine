@@ -381,7 +381,7 @@ int main(int argc, char **argv)
         }
     }
 
-    {
+    {   
         const char *q = "QUIT\n";
         (void)send_all(sock, q, strlen(q));
     }

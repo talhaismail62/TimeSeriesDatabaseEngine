@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../src/chunk.h"
+#include "../include/chunk.h"
 
-int main() {
+int main()
+{
 
     printf(
-        "Starting chunk test\n"
-    );
+        "Starting chunk test\n");
 
     const char *filepath =
         "test_data.chunk";
@@ -35,27 +35,23 @@ int main() {
         0xAA,
         0xBB,
         0xCC,
-        0xDD
-    };
+        0xDD};
 
     if (
         chunkwrite(
             filepath,
             &write_header,
-            write_payload
-        ) != 0
-    ) {
+            write_payload) != 0)
+    {
 
         printf(
-            "Failed\n"
-        );
+            "Failed\n");
 
         return 1;
     }
 
     printf(
-        "Success\n"
-    );
+        "Success\n");
 
     struct chunkheader read_header;
 
@@ -65,13 +61,11 @@ int main() {
         chunkread(
             filepath,
             &read_header,
-            &read_payload
-        ) != 0
-    ) {
+            &read_payload) != 0)
+    {
 
         printf(
-            "Failed\n"
-        );
+            "Failed\n");
 
         return 1;
     }
@@ -82,13 +76,11 @@ int main() {
         memcmp(
             write_payload,
             read_payload,
-            12
-        ) != 0
-    ) {
+            12) != 0)
+    {
 
         printf(
-            "Failed\n"
-        );
+            "Failed\n");
 
         free(read_payload);
 
@@ -96,8 +88,7 @@ int main() {
     }
 
     printf(
-        "Success\n"
-    );
+        "Success\n");
 
     free(read_payload);
 

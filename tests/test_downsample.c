@@ -7,16 +7,16 @@
 #include <unistd.h>
 #include <math.h>
 
-#include "../src/downsample.h"
-#include "../src/registry.h"
-#include "../src/flush.h"
-#include "../src/chunk.h"
-#include "../src/bit_io.h"
-#include "../src/timestamp.h"
-#include "../src/value.h"
+#include "../include/downsample.h"
+#include "../include/registry.h"
+#include "../include/flush.h"
+#include "../include/chunk.h"
+#include "../include/bit_io.h"
+#include "../include/timestamp.h"
+#include "../include/value.h"
 
 #define DATA_DIR "/tmp/test_downsample_data"
-#define METRIC   "cpu.test"
+#define METRIC "cpu.test"
 
 static void rmdir_recursive(const char *path)
 {
@@ -41,11 +41,12 @@ static void setup(void)
 static void write_raw_chunk(const char *metricDir, long base_ts,
                             int n_points, double base_val)
 {
-    uint64_t *ts  = malloc(sizeof(uint64_t) * (size_t)n_points);
-    double   *val = malloc(sizeof(double)   * (size_t)n_points);
+    uint64_t *ts = malloc(sizeof(uint64_t) * (size_t)n_points);
+    double *val = malloc(sizeof(double) * (size_t)n_points);
 
-    for (int i = 0; i < n_points; i++) {
-        ts[i]  = (uint64_t)(base_ts + i);
+    for (int i = 0; i < n_points; i++)
+    {
+        ts[i] = (uint64_t)(base_ts + i);
         val[i] = base_val + (double)i * 0.01;
     }
 
@@ -133,12 +134,13 @@ static void test_coarse_chunk_produced(void)
     metric_registry *entry;
     pthread_mutex_lock(&registry_lock);
     HASH_FIND_STR(registry, METRIC, entry);
-    if (entry) {
+    if (entry)
+    {
         char chunkPath[512];
         snprintf(chunkPath, sizeof(chunkPath), "%s/%s_%lu.chunk",
                  metricDir, METRIC, (unsigned long)base_ts);
         entry->chunks[0].start_ts = base_ts;
-        entry->chunks[0].end_ts   = base_ts + 119;
+        entry->chunks[0].end_ts = base_ts + 119;
         strncpy(entry->chunks[0].filename, chunkPath,
                 sizeof(entry->chunks[0].filename) - 1);
         entry->chunkCount = 1;
@@ -158,10 +160,16 @@ static void test_coarse_chunk_produced(void)
     /* At least one .chunk file should be in the coarse dir. */
     int found = 0;
     DIR *d = opendir(coarseDir);
-    if (d) {
+    if (d)
+    {
         struct dirent *de;
-        while ((de = readdir(d)) != NULL) {
-            if (strstr(de->d_name, ".chunk")) { found = 1; break; }
+        while ((de = readdir(d)) != NULL)
+        {
+            if (strstr(de->d_name, ".chunk"))
+            {
+                found = 1;
+                break;
+            }
         }
         closedir(d);
     }

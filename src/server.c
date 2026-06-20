@@ -11,13 +11,13 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <signal.h>
-#include "server.h"
-#include "request.h"
+#include "include/server.h"
+#include "include/request.h"
 #include <errno.h>
-#include "chunk.h"
-#include "wal.h"
-#include "retention.h"
-#include "downsample.h"
+#include "include/chunk.h"
+#include "include/wal.h"
+#include "include/retention.h"
+#include "include/downsample.h"
 
 #define BUFFER_SIZE 1024
 volatile bool server_running = true;
@@ -28,16 +28,20 @@ static RetentionConfig g_retention_cfg = {.count = 0};
 
 void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePath)
 {
-        for (int i = 0; i < argc; ++i) {
-                if(strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
+        for (int i = 0; i < argc; ++i)
+        {
+                if (strcmp(argv[i], "--port") == 0 && i + 1 < argc)
+                {
                         *portNumber = atoi(argv[i + 1]);
                         ++i;
                 }
-                else if(strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
+                else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc)
+                {
                         strcpy(dataFilePath, argv[i + 1]);
                         ++i;
                 }
-                else if(strcmp(argv[i], "--retention") == 0 && i + 1 < argc) {
+                else if (strcmp(argv[i], "--retention") == 0 && i + 1 < argc)
+                {
                         if (retention_add_rule(&g_retention_cfg, argv[i + 1]) != 0)
                                 fprintf(stderr, "warn: bad --retention spec '%s' (want metric=seconds)\n",
                                         argv[i + 1]);
@@ -46,9 +50,10 @@ void handleArguements(int argc, char *argv[], int *portNumber, char *dataFilePat
         }
 }
 
-void* handleClient(void* arg) {
+void *handleClient(void *arg)
+{
 
-        ThreadArgs *args = (ThreadArgs*)arg;
+        ThreadArgs *args = (ThreadArgs *)arg;
         int clientSocket = args->clientSocket;
         char dataDir[256];
         strcpy(dataDir, args->path);
@@ -59,16 +64,19 @@ void* handleClient(void* arg) {
         int inlen = 0;
         inbuf[0] = '\0';
 
-        while (1) {
+        while (1)
+        {
                 char tmp[BUFFER_SIZE];
                 int bytes = recv(clientSocket, tmp, BUFFER_SIZE, 0);
 
-                if (bytes <= 0) {
+                if (bytes <= 0)
+                {
                         printf("Client disconnected\n");
                         break;
                 }
 
-                if (inlen + bytes >= (int)sizeof(inbuf) - 1) {
+                if (inlen + bytes >= (int)sizeof(inbuf) - 1)
+                {
                         inlen = 0;
                         inbuf[0] = '\0';
                         send(clientSocket, "ERR line too long\n", 18, 0);
@@ -81,9 +89,11 @@ void* handleClient(void* arg) {
 
                 char *line_start = inbuf;
 
-                while (1) {
+                while (1)
+                {
                         char *nl = memchr(line_start, '\n', inbuf + inlen - line_start);
-                        if (!nl) break;
+                        if (!nl)
+                                break;
 
                         int linelen = (int)(nl - line_start) + 1;
 
@@ -95,7 +105,8 @@ void* handleClient(void* arg) {
                         line_start = nl + 1;
 
                         Request *request = getRequest(line);
-                        if (request == NULL) {
+                        if (request == NULL)
+                        {
                                 send(clientSocket, "Invalid Command!\n", 17, 0);
                                 continue;
                         }
@@ -104,22 +115,27 @@ void* handleClient(void* arg) {
 
                         if (response.runFurther == false)
                         {
-                                send(clientSocket,"quit\n" , 5, 0);
+                                send(clientSocket, "quit\n", 5, 0);
                                 free(request);
-                                if (response.result) free(response.result);
+                                if (response.result)
+                                        free(response.result);
                                 close(clientSocket);
                                 return NULL;
                         }
 
-                        if(response.result == NULL) {
-                                if (send(clientSocket, "ok", 2, 0) < 0) {
+                        if (response.result == NULL)
+                        {
+                                if (send(clientSocket, "ok", 2, 0) < 0)
+                                {
                                         perror("send failed");
                                         free(request);
                                         break;
                                 }
                         }
-                        else {
-                                if (send(clientSocket, response.result, strlen(response.result), 0) < 0) {
+                        else
+                        {
+                                if (send(clientSocket, response.result, strlen(response.result), 0) < 0)
+                                {
                                         perror("send failed");
                                         free(response.result);
                                         free(request);
@@ -132,7 +148,8 @@ void* handleClient(void* arg) {
                 }
 
                 int remaining = (int)(inbuf + inlen - line_start);
-                if (remaining > 0) memmove(inbuf, line_start, remaining);
+                if (remaining > 0)
+                        memmove(inbuf, line_start, remaining);
                 inlen = remaining;
                 inbuf[inlen] = '\0';
         }
@@ -141,12 +158,13 @@ void* handleClient(void* arg) {
         return NULL;
 }
 
-bool createPthreadForUsers(int clientSocket, char* dataFilePath)
+bool createPthreadForUsers(int clientSocket, char *dataFilePath)
 {
         pthread_t tid;
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
 
-        if (!args) {
+        if (!args)
+        {
                 perror("Failed to allocate thread args");
                 close(clientSocket);
                 return false;
@@ -155,7 +173,8 @@ bool createPthreadForUsers(int clientSocket, char* dataFilePath)
         strncpy(args->path, dataFilePath, 256 - 1);
         args->path[256 - 1] = '\0';
 
-        if (pthread_create(&tid, NULL, handleClient, (void*)args) != 0) {
+        if (pthread_create(&tid, NULL, handleClient, (void *)args) != 0)
+        {
                 perror("Thread creation failed");
                 free(args);
                 close(clientSocket);
@@ -166,7 +185,8 @@ bool createPthreadForUsers(int clientSocket, char* dataFilePath)
         return true;
 }
 
-void createAndRunServer(const int portNumber, char *dataFilePath) {
+void createAndRunServer(const int portNumber, char *dataFilePath)
+{
         int clientSocket;
         struct sockaddr_in serverAddress, clientAddress;
 
@@ -179,12 +199,14 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         int opt = 1;
         setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-        if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+        if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+        {
                 perror("bind failed");
                 exit(1);
         }
 
-        if (listen(serverSocket, 128) < 0) {
+        if (listen(serverSocket, 128) < 0)
+        {
                 perror("listen failed");
                 exit(1);
         }
@@ -203,7 +225,8 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
         {
                 addressSize = sizeof(clientAddress);
                 clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &addressSize);
-                if (clientSocket < 0) {
+                if (clientSocket < 0)
+                {
                         if (!server_running)
                                 break;
                         if (errno == EINTR || errno == EBADF)
@@ -224,20 +247,23 @@ void createAndRunServer(const int portNumber, char *dataFilePath) {
 
 void handle_shutdown(int sig)
 {
-    (void)sig;
-    server_running = false;
-    close(serverSocket);
+        (void)sig;
+        server_running = false;
+        close(serverSocket);
 }
 
-void loadRegistry(char* dataFilePath) {
+void loadRegistry(char *dataFilePath)
+{
         DIR *dir = opendir(dataFilePath);
-        if (!dir) {
+        if (!dir)
+        {
                 perror("opendir");
                 return;
         }
 
         struct dirent *entry;
-        while ((entry = readdir(dir)) != NULL) {
+        while ((entry = readdir(dir)) != NULL)
+        {
                 if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
                         continue;
 
@@ -245,15 +271,19 @@ void loadRegistry(char* dataFilePath) {
                 snprintf(metric_path, sizeof(metric_path), "%s/%s", dataFilePath, entry->d_name);
 
                 struct stat st;
-                if (stat(metric_path, &st) == 0 && S_ISDIR(st.st_mode)) {
+                if (stat(metric_path, &st) == 0 && S_ISDIR(st.st_mode))
+                {
                         getMetricFromHashTable(entry->d_name, true);
 
                         DIR *mDir = opendir(metric_path);
-                        if (!mDir) continue;
+                        if (!mDir)
+                                continue;
 
                         struct dirent *mEntry;
-                        while ((mEntry = readdir(mDir)) != NULL) {
-                                if (strstr(mEntry->d_name, ".chunk")) {
+                        while ((mEntry = readdir(mDir)) != NULL)
+                        {
+                                if (strstr(mEntry->d_name, ".chunk"))
+                                {
                                         char chunk_full_path[1024];
                                         snprintf(chunk_full_path, sizeof(chunk_full_path), "%s/%s", metric_path, mEntry->d_name);
                                         loadChunkMetadata(entry->d_name, chunk_full_path);
@@ -273,7 +303,8 @@ void loadRegistry(char* dataFilePath) {
         closedir(dir);
 }
 
-void loadChunkMetadata(char *metricName, char *chunkPath) {
+void loadChunkMetadata(char *metricName, char *chunkPath)
+{
 
         pthread_mutex_lock(&registry_lock02);
         metric_registry *entry;
@@ -286,9 +317,11 @@ void loadChunkMetadata(char *metricName, char *chunkPath) {
         struct chunkheader header;
         uint8_t *payload = NULL;
 
-        if (chunkread(chunkPath, &header, &payload) == 0) {
+        if (chunkread(chunkPath, &header, &payload) == 0)
+        {
 
-                if (entry->chunkCount >= entry->chunkCapacity) {
+                if (entry->chunkCount >= entry->chunkCapacity)
+                {
                         entry->chunkCapacity = (entry->chunkCapacity == 0) ? 4 : entry->chunkCapacity * 2;
                         entry->chunks = realloc(entry->chunks, sizeof(ChunkMetadata) * entry->chunkCapacity);
                 }

@@ -1,6 +1,7 @@
-#include "bit_io.h"
+#include "include/bit_io.h"
 
-struct bytebuffer* buffercreate() {
+struct bytebuffer *buffercreate()
+{
     struct bytebuffer *buf = malloc(sizeof(struct bytebuffer));
 
     buf->capacity = 64;
@@ -10,8 +11,10 @@ struct bytebuffer* buffercreate() {
     return buf;
 }
 
-void bufferappend(struct bytebuffer *buf, uint8_t byte) {
-    if (buf->size >= buf->capacity) {
+void bufferappend(struct bytebuffer *buf, uint8_t byte)
+{
+    if (buf->size >= buf->capacity)
+    {
         buf->capacity *= 2;
         buf->data = realloc(buf->data, buf->capacity);
     }
@@ -19,14 +22,17 @@ void bufferappend(struct bytebuffer *buf, uint8_t byte) {
     buf->data[buf->size++] = byte;
 }
 
-void bufferfree(struct bytebuffer *buf) {
-    if (buf) {
+void bufferfree(struct bytebuffer *buf)
+{
+    if (buf)
+    {
         free(buf->data);
         free(buf);
     }
 }
 
-struct bitwriter* bwcreate() {
+struct bitwriter *bwcreate()
+{
     struct bitwriter *bw = malloc(sizeof(struct bitwriter));
 
     bw->buffer = buffercreate();
@@ -36,8 +42,10 @@ struct bitwriter* bwcreate() {
     return bw;
 }
 
-void bwwrite(struct bitwriter *bw, uint64_t value, int n_bits) {
-    while (n_bits > 0) {
+void bwwrite(struct bitwriter *bw, uint64_t value, int n_bits)
+{
+    while (n_bits > 0)
+    {
 
         int free_in_byte = 8 - bw->filledbits;
         int take = (n_bits < free_in_byte) ? n_bits : free_in_byte;
@@ -52,7 +60,8 @@ void bwwrite(struct bitwriter *bw, uint64_t value, int n_bits) {
         bw->filledbits += take;
         n_bits -= take;
 
-        if (bw->filledbits == 8) {
+        if (bw->filledbits == 8)
+        {
 
             bufferappend(bw->buffer, bw->current_byte);
 
@@ -62,8 +71,10 @@ void bwwrite(struct bitwriter *bw, uint64_t value, int n_bits) {
     }
 }
 
-void bwclose(struct bitwriter *bw) {
-    if (bw->filledbits > 0) {
+void bwclose(struct bitwriter *bw)
+{
+    if (bw->filledbits > 0)
+    {
 
         bufferappend(bw->buffer, bw->current_byte);
 
@@ -72,14 +83,17 @@ void bwclose(struct bitwriter *bw) {
     }
 }
 
-void bwfree(struct bitwriter *bw) {
-    if (bw) {
+void bwfree(struct bitwriter *bw)
+{
+    if (bw)
+    {
         bufferfree(bw->buffer);
         free(bw);
     }
 }
 
-struct bitreader* brcreate(struct bytebuffer *buffer) {
+struct bitreader *brcreate(struct bytebuffer *buffer)
+{
     struct bitreader *br = malloc(sizeof(struct bitreader));
 
     br->buffer = buffer;
@@ -89,12 +103,15 @@ struct bitreader* brcreate(struct bytebuffer *buffer) {
     return br;
 }
 
-uint64_t brread(struct bitreader *br, int n_bits) {
+uint64_t brread(struct bitreader *br, int n_bits)
+{
     uint64_t result = 0;
 
-    while (n_bits > 0) {
+    while (n_bits > 0)
+    {
 
-        if (br->byteoffset >= br->buffer->size) {
+        if (br->byteoffset >= br->buffer->size)
+        {
             return result;
         }
 
@@ -112,7 +129,8 @@ uint64_t brread(struct bitreader *br, int n_bits) {
         br->bitsconsumed += take;
         n_bits -= take;
 
-        if (br->bitsconsumed == 8) {
+        if (br->bitsconsumed == 8)
+        {
             br->bitsconsumed = 0;
             br->byteoffset++;
         }
@@ -121,8 +139,10 @@ uint64_t brread(struct bitreader *br, int n_bits) {
     return result;
 }
 
-void brfree(struct bitreader *br) {
-    if (br) {
+void brfree(struct bitreader *br)
+{
+    if (br)
+    {
         free(br);
     }
 }

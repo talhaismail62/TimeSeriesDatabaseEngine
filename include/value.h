@@ -2,9 +2,10 @@
 #define VALUE_H
 
 #include <stdint.h>
-#include "bit_io.h"
+#include "include/bit_io.h"
 
-struct valueencoder {
+struct valueencoder
+{
     struct bitwriter *bw;
     uint64_t prevvaluebits;
     int prevleading;
@@ -12,7 +13,8 @@ struct valueencoder {
     int isfirst;
 };
 
-struct valuedecoder {
+struct valuedecoder
+{
     struct bitreader *br;
     uint64_t prevvaluebits;
     int prevleading;

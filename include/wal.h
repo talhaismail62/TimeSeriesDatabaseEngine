@@ -1,7 +1,7 @@
 #ifndef WAL_H
 #define WAL_H
 
-#include "head.h"
+#include "include/head.h"
 
 /* Append one (timestamp, value) record to the metric's WAL.
    Creates the metric directory if it does not exist yet.

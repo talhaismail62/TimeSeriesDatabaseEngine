@@ -4,56 +4,57 @@ project(TimeSeriesDatabaseEngine C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(COMMON_SOURCES
     src/parsor.c
-    src/parsor.h
+    include/parsor.h
     src/registry.c
-    src/registry.h
+    include/registry.h
     src/timestamp.c
-    src/timestamp.h
+    include/timestamp.h
     src/value.c
-    src/value.h
+    include/value.h
     src/chunk.c
-    src/chunk.h
+    include/chunk.h
     src/bit_io.c
-    src/bit_io.h
+    include/bit_io.h
 
     src/head.c
-    src/head.h
+    include/head.h
     
     src/flush.c
-    src/flush.h
+    include/flush.h
 
     src/wal.c
-    src/wal.h
+    include/wal.h
 
     src/retention.c
-    src/retention.h
+    include/retention.h
 
     src/downsample.c
-    src/downsample.h
+    include/downsample.h
 )
 
 add_executable(tsdb
     src/main.c
     
-    src/uthash.h
+    include/uthash.h
 
-    src/server.h
+    include/server.h
     src/server.c
 
     src/request.c
-    src/request.h
+    include/request.h
 
-    src/registry.h
+    include/registry.h
     src/registry.c
 
-    src/head.h
+    include/head.h
     src/head.c
 
     src/parsor.c
-    src/parsor.h
+    include/parsor.h
     
     ${COMMON_SOURCES}
 )

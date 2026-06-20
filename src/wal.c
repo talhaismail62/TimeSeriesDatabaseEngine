@@ -1,4 +1,4 @@
-#include "wal.h"
+#include "include/wal.h"
 
 #include <stdio.h>
 #include <stdlib.h>

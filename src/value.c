@@ -1,4 +1,4 @@
-#include "value.h"
+#include "include/value.h"
 
 #include <string.h>
 
@@ -42,9 +42,8 @@ void valencoderwrite(
     double value)
 {
     uint64_t valbits = doubletobits(value);
-    
+
     valbits &= 0xFFFFFFFFFFFFFFF0ULL;
-    
 
     if (encoder->isfirst)
     {

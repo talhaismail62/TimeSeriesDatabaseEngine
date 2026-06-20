@@ -2,9 +2,10 @@
 #define TIMESTAMP_H
 
 #include <stdint.h>
-#include "bit_io.h"
+#include "include/bit_io.h"
 
-struct timestampencoder {
+struct timestampencoder
+{
     struct bitwriter *bw;
     uint64_t prevtimestamp;
     int64_t prevdelta;
@@ -12,7 +13,8 @@ struct timestampencoder {
     int issecond;
 };
 
-struct timestampdecoder {
+struct timestampdecoder
+{
     struct bitreader *br;
     uint64_t prevtimestamp;
     int64_t prevdelta;

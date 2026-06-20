@@ -1,4 +1,4 @@
-#include "chunk.h"
+#include "include/chunk.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,16 +6,16 @@
 int chunkwrite(
     const char *filepath,
     struct chunkheader *header,
-    const uint8_t *payload
-) {
+    const uint8_t *payload)
+{
 
     FILE *file = fopen(filepath, "wb");
 
-    if (!file) {
+    if (!file)
+    {
 
         perror(
-            "Failed to open chunk file for writing"
-        );
+            "Failed to open chunk file for writing");
 
         return -1;
     }
@@ -25,9 +25,8 @@ int chunkwrite(
             header,
             sizeof(struct chunkheader),
             1,
-            file
-        ) != 1
-    ) {
+            file) != 1)
+    {
 
         fclose(file);
 
@@ -39,9 +38,8 @@ int chunkwrite(
             payload,
             1,
             header->sizebytes,
-            file
-        ) != header->sizebytes
-    ) {
+            file) != header->sizebytes)
+    {
 
         fclose(file);
 
@@ -56,16 +54,16 @@ int chunkwrite(
 int chunkread(
     const char *filepath,
     struct chunkheader *header,
-    uint8_t **payload
-) {
+    uint8_t **payload)
+{
 
     FILE *file = fopen(filepath, "rb");
 
-    if (!file) {
+    if (!file)
+    {
 
         perror(
-            "Failed to open chunk file for reading"
-        );
+            "Failed to open chunk file for reading");
 
         return -1;
     }
@@ -75,9 +73,8 @@ int chunkread(
             header,
             sizeof(struct chunkheader),
             1,
-            file
-        ) != 1
-    ) {
+            file) != 1)
+    {
 
         fclose(file);
 
@@ -87,7 +84,8 @@ int chunkread(
     *payload =
         (uint8_t *)malloc(header->sizebytes);
 
-    if (!(*payload)) {
+    if (!(*payload))
+    {
 
         fclose(file);
 
@@ -99,9 +97,8 @@ int chunkread(
             *payload,
             1,
             header->sizebytes,
-            file
-        ) != header->sizebytes
-    ) {
+            file) != header->sizebytes)
+    {
 
         free(*payload);
 

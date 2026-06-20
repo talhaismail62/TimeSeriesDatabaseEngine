@@ -1,20 +1,20 @@
-#include "registry.h"
+#include "include/registry.h"
 #include <stdlib.h>
-#include "uthash.h"
+#include "include/uthash.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include <stdio.h>
-#include "head.h"
-#include "flush.h"
-#include "timestamp.h"
-#include "bit_io.h"
-#include "chunk.h"
-#include "value.h"
-#include "wal.h"
-#include "downsample.h"
+#include "include/head.h"
+#include "include/flush.h"
+#include "include/timestamp.h"
+#include "include/bit_io.h"
+#include "include/chunk.h"
+#include "include/value.h"
+#include "include/wal.h"
+#include "include/downsample.h"
 #include <dirent.h>
 
 typedef struct
@@ -38,8 +38,8 @@ static char g_dataDir[512] = {0};
 
 void registry_init(const char *dataDir)
 {
-    strncpy(g_dataDir, dataDir, sizeof(g_dataDir) - 1);
-    g_dataDir[sizeof(g_dataDir) - 1] = '\0';
+        strncpy(g_dataDir, dataDir, sizeof(g_dataDir) - 1);
+        g_dataDir[sizeof(g_dataDir) - 1] = '\0';
 }
 
 HeadBlock *getMetricFromHashTable(char *key, bool flag)
@@ -211,17 +211,21 @@ char *Head_AGG(char *metricName,
                                                startTimestamp, endTimestamp,
                                                bucketSeconds);
 
-        if (use_coarse) {
+        if (use_coarse)
+        {
                 /* Scan the coarse directory for chunk files. */
                 char coarseDir[512];
                 downsample_coarse_dir(g_dataDir, metricName,
                                       coarseDir, sizeof(coarseDir));
 
                 DIR *d = opendir(coarseDir);
-                if (d) {
+                if (d)
+                {
                         struct dirent *de;
-                        while ((de = readdir(d)) != NULL) {
-                                if (!strstr(de->d_name, ".chunk")) continue;
+                        while ((de = readdir(d)) != NULL)
+                        {
+                                if (!strstr(de->d_name, ".chunk"))
+                                        continue;
                                 char path[768];
                                 snprintf(path, sizeof(path), "%s/%s",
                                          coarseDir, de->d_name);
@@ -232,7 +236,9 @@ char *Head_AGG(char *metricName,
                         }
                         closedir(d);
                 }
-        } else {
+        }
+        else
+        {
                 for (int i = 0; i < entry->chunkCount; i++)
                 {
                         if (entry->chunks[i].start_ts < endTimestamp &&
@@ -625,6 +631,7 @@ static char *agg_points(Point *pts, int n,
                         int bucketSeconds,
                         const char *func)
 {
+
         // allocate output buffer
         int out_cap = 2048;
         char *out = (char *)malloc(out_cap);
@@ -635,6 +642,9 @@ static char *agg_points(Point *pts, int n,
 
         int buckets = 0;
 
+        int distinctCount = 0;
+        long prevTS = 0;
+        qsort(pts, n, sizeof(Point), cmp_point_ts);
         // iterate buckets in [start, end) stepping by bucketSeconds
         for (long bstart = start; bstart < end; bstart += bucketSeconds)
         {
@@ -647,6 +657,7 @@ static char *agg_points(Point *pts, int n,
 
                 for (int i = 0; i < n; i++)
                 {
+
                         long ts = pts[i].ts;
                         if (ts < bstart)
                                 continue;
@@ -667,6 +678,9 @@ static char *agg_points(Point *pts, int n,
                         }
                         sum += v;
                         count++;
+                        if (pts[i].ts != prevTS)
+                                ++distinctCount;
+                        prevTS = pts[i].ts;
                 }
 
                 // Per spec, you typically output buckets that have points.
@@ -694,6 +708,10 @@ static char *agg_points(Point *pts, int n,
                 else if (strcmp(func, "count") == 0)
                 {
                         result = (double)count;
+                }
+                else if (strcmp(func, "Dcount") == 0)
+                {
+                        result = (double)distinctCount;
                 }
                 else
                 {
@@ -754,5 +772,123 @@ static char *agg_points(Point *pts, int n,
         }
         memcpy(out + out_len, footer, need + 1);
 
+        return out;
+}
+
+char *Head_AGG_EVAL(char *metricName,
+                    long startTimestamp,
+                    long endTimestamp,
+                    int bucketSeconds,
+                    const char *func)
+{
+        // validate
+        if (bucketSeconds <= 0 || startTimestamp >= endTimestamp)
+        {
+                char *err = (char *)malloc(64);
+                if (err)
+                        snprintf(err, 64, "ERR invalid range or bucket\n");
+                return err;
+        }
+
+        pthread_mutex_lock(&registry_lock);
+        metric_registry *entry;
+        HASH_FIND_STR(registry, metricName, entry);
+        pthread_mutex_unlock(&registry_lock);
+
+        if (!entry)
+        {
+                // no metric -> empty result
+                char *out = (char *)malloc(32);
+                if (out)
+                        snprintf(out, 32, "(0 buckets)\n");
+                return out;
+        }
+
+        Point *pts = NULL;
+        int n = 0, cap = 0;
+
+        // 1) disk chunks — use coarse (_1m) data for large ranges if available
+        int use_coarse = (g_dataDir[0] != '\0') &&
+                         downsample_should_use(g_dataDir, metricName,
+                                               startTimestamp, endTimestamp,
+                                               bucketSeconds);
+
+        if (use_coarse)
+        {
+                /* Scan the coarse directory for chunk files. */
+                char coarseDir[512];
+                downsample_coarse_dir(g_dataDir, metricName,
+                                      coarseDir, sizeof(coarseDir));
+
+                DIR *d = opendir(coarseDir);
+                if (d)
+                {
+                        struct dirent *de;
+                        while ((de = readdir(d)) != NULL)
+                        {
+                                if (!strstr(de->d_name, ".chunk"))
+                                        continue;
+                                char path[768];
+                                snprintf(path, sizeof(path), "%s/%s",
+                                         coarseDir, de->d_name);
+                                /* collect_points_from_chunk filters by [start,end) internally */
+                                collect_points_from_chunk(path,
+                                                          startTimestamp, endTimestamp,
+                                                          &pts, &n, &cap);
+                        }
+                        closedir(d);
+                }
+        }
+        else
+        {
+                for (int i = 0; i < entry->chunkCount; i++)
+                {
+                        if (entry->chunks[i].start_ts < endTimestamp &&
+                            entry->chunks[i].end_ts >= startTimestamp)
+                        {
+                                if (collect_points_from_chunk(entry->chunks[i].filename,
+                                                              startTimestamp, endTimestamp,
+                                                              &pts, &n, &cap) != 0)
+                                {
+                                        free(pts);
+                                        char *err = (char *)malloc(64);
+                                        if (err)
+                                                snprintf(err, 64, "ERR disk read\n");
+                                        return err;
+                                }
+                        }
+                }
+        }
+
+        // 2) RAM head
+        pthread_mutex_lock(&entry->head->lock);
+        if (collect_points_from_head(entry->head,
+                                     startTimestamp, endTimestamp,
+                                     &pts, &n, &cap) != 0)
+        {
+                pthread_mutex_unlock(&entry->head->lock);
+                free(pts);
+                char *err = (char *)malloc(64);
+                if (err)
+                        snprintf(err, 64, "ERR no memory\n");
+                return err;
+        }
+        pthread_mutex_unlock(&entry->head->lock);
+
+        if (n == 0)
+        {
+                char *out = (char *)malloc(32);
+                if (out)
+                        snprintf(out, 32, "(0 buckets)\n");
+                free(pts);
+                return out;
+        }
+
+        // sort by timestamp
+        qsort(pts, n, sizeof(Point), cmp_point_ts);
+
+        // aggregate
+        char *out = agg_points(pts, n, startTimestamp, endTimestamp, bucketSeconds, func);
+        free(pts);
         return out;
 }
