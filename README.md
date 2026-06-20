@@ -178,12 +178,12 @@ build/
 
 #### INSERT (Write Data)
 ```
-INSERT metric_name timestamp value
+PUT metric_name timestamp value
 ```
 Example:
 ```
-INSERT temperature 1687123456 23.5
-INSERT cpu_usage 1687123457 65.2
+PUT temperature 1687123456 23.5
+PUT cpu_usage 1687123457 65.2
 ```
 
 #### GET (Query Range)
