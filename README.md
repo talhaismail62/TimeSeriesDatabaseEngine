@@ -349,15 +349,16 @@ Third-party libraries are licensed under their respective licenses - see `THIRD_
 
 ## Acknowledgments
 
-- **Khokhar Bhai** - Project Lead
-- **Talha Ismail** - Developer
+- **[Talha Ismail](https://github.com/talhaismail62/)** - Project Lead
+- **[Ahmed Nadeem](https://github.com/ahmednadeem18/)** - Developer
+- **[Rohail Ashraf](https://github.com/R0HAIL-ASHRAF)** - Developer
 - Inspired by [Gorilla Time Series Database](http://www.vldb.org/pvldb/vol8/p1816-teller.pdf) from Facebook
 - Uses [uthash](https://troydhanson.github.io/uthash/) by Troy D. Hanson
 
 ## Support & Issues
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/talhaismail62/TimeSeriesDatabaseEngine/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/talhaismail62/TimeSeriesDatabaseEngine/discussions)
+- **Bug Reports**: [GitHub Issues](https://github.com/talhaismail62/TimeSeriesDatabaseEngine/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/talhaismail62/TimeSeriesDatabaseEngine/discussions)
 - 📧 **Contact**: Open an issue with your question
 
 ## Roadmap
